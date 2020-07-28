@@ -1,0 +1,204 @@
+{
+    "animation":{
+        "description":"Perform an animation",
+        "input":"dropdown",
+        "options":{
+            "flip":"bool",
+            "reverse":"bool",
+            "time":"seconds"
+        },
+        "primitive":"Animation",
+        "type":"output"
+    },
+    "close_hand":{
+        "description":"Close robot's hand",
+        "input":"dropdown",
+        "input_options":[
+            "both",
+            "right",
+            "left"
+        ],
+        "primitive":"Close hand",
+        "type":"output"
+    },
+    "emotion":{
+        "description":"Some emotion",
+        "input":"dropdown",
+        "input_options":[
+            "happy",
+            "angry",
+            "sad",
+            "surprised",
+            "neutral"
+        ],
+        "primitive":"Emotion",
+        "type":"input"
+    },
+    "human_detected":{
+        "description":"Is human detected with the camera?",
+        "input":"dropdown",
+        "input_options":[
+            "yes",
+            "no"
+        ],
+        "primitive":"Human detected (camera)",
+        "type":"input"
+    },
+    "mode":{
+        "description":"Wake or rest the robot",
+        "input":"dropdown",
+        "input_options":[
+            "wake_up",
+            "rest"
+        ],
+        "primitive":"Mode (Wake up/ Rest)",
+        "type":"output"
+    },
+    "object_detected":{
+        "description":"Object detected",
+        "input":"string",
+        "primitive":"Object detected",
+        "type":"input"
+    },
+    "open_hand":{
+        "description":"Open robot's hands",
+        "input":"dropdown",
+        "input_options":[
+            "both",
+            "right",
+            "left"
+        ],
+        "primitive":"Open hand",
+        "type":"output"
+    },
+    "say":{
+        "description":"Say something with the robot",
+        "input":"string",
+        "options":{
+            "contextual":"bool",
+            "pitch":"percentage",
+            "velocity":"percentage"
+        },
+        "primitive":"Say",
+        "type":"output"
+    },
+    "take_photo":{
+        "description":"Take and show a photo",
+        "input":"dropdown",
+        "input_options":[
+            "Top",
+            "Bottom"
+        ],
+        "primitive":"Take photo with camera on",
+        "type":"output"
+    },
+    "touched":{
+        "description":"Is robot touched",
+        "input":"dropdown",
+        "input_options":[
+            "head",
+            "right_hand",
+            "left_hand"
+        ],
+        "primitive":"Touched",
+        "type":"input"
+    },
+    "track_people_with":{
+        "description":"Track human",
+        "input":"dropdown",
+        "input_options":[
+            "WholeBody",
+            "Head",
+            "None"
+        ],
+        "options":{
+            "LeftArm":"bool",
+            "RightArm":"bool"
+        },
+        "primitive":"Track people with",
+        "type":"output"
+    },
+    "track_redball_with":{
+        "description":"Track red objects",
+        "input":"dropdown",
+        "input_options":[
+            "WholeBody",
+            "Head",
+            "None"
+        ],
+        "options":{
+            "LeftArm":"bool",
+            "RightArm":"bool"
+        },
+        "primitive":"Track red ball with",
+        "type":"output"
+    },
+    "track_sound_with":{
+        "description":"Track sound sources",
+        "input":"dropdown",
+        "input_options":[
+            "WholeBody",
+            "Head",
+            "None"
+        ],
+        "options":{
+            "LeftArm":"bool",
+            "RightArm":"bool"
+        },
+        "primitive":"Track sound with",
+        "type":"output"
+    },
+    "turn":{
+        "description":"Turn robot body",
+        "input":"dropdown",
+        "input_options":[
+            "left",
+            "right"
+        ],
+        "options":{
+            "degrees":"degrees"
+        },
+        "primitive":"Turn",
+        "type":"output"
+    },
+    "wait":{
+        "description":"Wait some seconds",
+        "input":"seconds",
+        "primitive":"Wait (seconds)",
+        "type":"output"
+    },
+    "walk":{
+        "description":"Turn robot body",
+        "input":"dropdown",
+        "input_options":[
+            "forwards",
+            "backwards"
+        ],
+        "options":{
+            "meters":"meters"
+        },
+        "primitive":"Walk",
+        "type":"output"
+    },
+    "walk_toward":{
+        "description":"Walk towards people or a red ball",
+        "input":"dropdown",
+        "input_options":[
+            "People",
+            "RedBall",
+            "None"
+        ],
+        "options":{
+            "LeftArm":"bool",
+            "RightArm":"bool"
+        },
+        "primitive":"Walk towards",
+        "type":"output"
+    },
+    "word":{
+        "description":"Listen human speech and detect word",
+        "input":"string",
+        "primitive":"Word",
+        "type":"input"
+    }
+}

@@ -1,0 +1,68 @@
+{
+  "name": "rize_betta",
+  "version": "0.0.1",
+  "productName": "RIZE(Beta)",
+  "description": "Robot Interface From Zero Experience (Beta)",
+  "main": "main.js",
+  "scripts": {
+    "postinstall": "install-app-deps",
+    "start": "npm install && electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "RIZE(Beta)",
+    "extraResources": "python_scripts",
+    "dmg": {
+      "contents": [
+        {
+          "x": 110,
+          "y": 150
+        },
+        {
+          "x": 240,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    },
+    "win": {
+      "target": "NSIS",
+      "icon": "images/rize.png"
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "icon": "web/images/rize.png",
+      "category": "public.app-category.social-networking"
+    }
+  },
+  "author": "Enrique Coronado",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.19.0",
+    "fix-path": "^2.1.0",
+    "jquery": "^3.4.1",
+    "nep-js": "0.1.1",
+    "rize-js": "0.0.5",
+    "open": "^7.0.3",
+    "sharo": "0.0.7",
+    "vue": "^2.6.11",
+    "vuetify": "^2.3.4",
+    "zeromq": "^6.0.0-beta.6"
+  },
+  "devDependencies": {
+    "@mdi/font": "^5.3.45",
+    "electron": "^7.1.7",
+    "electron-builder": "^22.4.1",
+    "javascript-state-machine": "^3.1.0"
+  }
+}

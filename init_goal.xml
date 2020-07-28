@@ -1,0 +1,8 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <variables></variables>
+  <block type="goal" id="haxfv,wTikoxtX?unU`D" x="27" y="32">
+    <field name="module_name">edit</field>
+    <field name="delay">0</field>
+    <field name="priority">normal</field>
+  </block>
+</xml>

@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <!-- ################# General Style/Design  ######################## -->
+  <link href="web/roboto.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+  <link href="web/@mdi/font/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="web/vuetify/dist/vuetify.min.css" rel="stylesheet">
+  <link href="rize/design.css" rel="stylesheet" />
+
+  <!-- #################  ROSbridge  ######################## -->
+  <script type="text/javascript"
+    src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+  <script type="text/javascript" src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+
+  <!-- ################# Google Blockly  ######################## -->
+  <script src="rize/blockly_static/blockly_compressed.js"></script>
+  <script src="rize/blockly_static/en.js"></script>
+  <script src="rize/blockly_static/blocks_compressed.js"></script>
+  <script src="rize/blockly_static/python_compressed.js?"></script>
+
+  <!--  ************************ Toolbox **************************** -->
+  <script type="text/javascript" src="developer/toolbox.js?"></script>
+
+  <!--  ************************ Blocks **************************** -->
+
+  <script src="developer/blockly_dynamic/primitives_blocks.js?"></script>
+  <script src="developer/blockly_dynamic/primitives_generators.js?"></script>
+  <script src="developer/blockly_dynamic/behaviors_blocks.js?"></script>
+  <script src="developer/blockly_dynamic/behaviors_generators.js?"></script>
+
+  <!--  ************** Blockly Workspace definition ***************** -->
+  <script src="developer/workspace.js?"></script>
+
+  <!-- ################# RIZE  ######################## -->
+  <script src="rize/Blocks2Code.js"></script>
+
+  <script src="web/kapuccino/src/kapuccino.js"></script>
+  <script src="web/rize/src/rize.js"></script>
+  <script src='web/javascript-state-machine/machine/state-machine.js'></script>
+
+  <!-- ################# NAO  ######################## -->
+  <script type="text/javascript" src="libs/qimessaging/1.0/socket.io.min.js"></script>
+  <script type="text/javascript" src="libs/qimessaging/1.0/jquery.min.js"></script>
+  <script type="text/javascript" src="libs/qimessaging/1.0/qimessaging.js"></script>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+
+</head>
+
+<body>
+  <div id="app">
+    <v-app id="inspire">
+      <div>
+        <v-dialog v-model="main_dialog" fullscreen hide-overlay transition="dialog-bottom-transition">
+          <v-card>
+            <rize-menu :dialog_start="dialog_start"></rize-menu>
+
+            <v-navigation-drawer v-model="drawer" fixed clipped right temporary>
+              <v-list-item>
+
+                <v-list-item-content>
+                  <v-list-item-title>More</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+
+              <v-divider></v-divider>
+
+              <v-list dense>
+
+                <v-list-item v-for="item in items_menus" :key="item.title" link>
+                  <v-list-item-icon>
+                    <v-icon>{{ item.icon }}</v-icon>
+                  </v-list-item-icon>
+
+                  <v-list-item-content>
+                    <v-list-item-title>{{ item.title }}</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list>
+            </v-navigation-drawer>
+
+
+            <rize-dialog-send :dialog_send="dialog_send" :items_robots_list="items_robots"
+              :items_language="items_language" :chips_language="chips_language"></rize-dialog-send>
+            <rize-dialog-posture :dialog_posture="dialog_posture" :items_robots_list="items_robots">
+            </rize-dialog-posture>
+            <v-tabs v-model="model" centered slider-color="yellow" background-color="transparent">
+              <v-tab v-for="i in tabs_name" :key="i" :href="`#tab-${i}`">
+                {{ i }}
+              </v-tab>
+            </v-tabs>
+            </template>
+            </v-toolbar>
+
+            <v-tabs-items v-model="model">
+              <v-tab-item v-for="i in tabs_name" :key="i" :value="`tab-${i}`">
+                <v-card flat>
+                  <div v-if="model === 'tab-Home'">
+                    <v-card flat>
+                      <v-container grid-list-md text-center>
+                        <v-layout wrap align-center justify-center>
+
+                          <v-flex xs12>
+                            <v-card color="white" flat>
+                              &emsp;
+                            </v-card>
+                          </v-flex>
+
+                          <v-flex xs12>
+                            <v-card color="white" flat>
+                              &emsp;
+                            </v-card>
+                          </v-flex>
+
+                          <v-flex xs12>
+                            <v-card color="white" flat>
+                              <v-container grid-list-md text-center>
+                                <v-layout wrap align-center justify-center>
+                                  <v-avatar size="106">
+                                    <img src="images/rize.png" alt="avatar">
+                                  </v-avatar>
+                                </v-layout>
+                              </v-container>
+                            </v-card>
+                          </v-flex>
+                          <v-flex xs4 md4>
+                            <v-card color="white" flat>
+                              <div>
+                                <p style=" color:#424242; font-size: 36px"> <b>R</b>obot <b>I</b>nterfaces from
+                                  <b>Z</b>ero
+                                  <b>E</b>xperience</p>
+                              </div>
+                              <div>&nbsp;</div>
+
+                            </v-card>
+                          </v-flex>
+
+                          <v-flex xs12>
+                            <v-card color="white" flat>
+                              &emsp;
+                            </v-card>
+                          </v-flex>
+
+
+                          <v-flex xs8>
+                            <div v-if="status_robot_dialog === 'noconnected'">
+                              <v-card color="white" flat>
+                                <v-container grid-list-md text-center>
+                                  <v-layout wrap align-center justify-center>
+                                    <v-flex xs10>
+                                      <v-alert prominent text :type=colorM>
+                                        <v-row align="center">
+                                          <v-col class="grow"> {{ robot_name }} not connected </v-col>
+                                          <v-col class="shrink">
+                                            <v-btn outlined color="info" v-on:click="onConnectPepper()">Connect robot
+                                            </v-btn>
+                                          </v-col>
+                                        </v-row>
+                                      </v-alert>
+                                    </v-flex>
+
+                                  </v-layout>
+
+                                </v-container>
+
+                              </v-card>
+                            </div>
+
+                            <div v-if="status_robot_dialog === 'success'">
+                              <v-card color="white" flat>
+                                <v-alert prominent text type="success">
+                                  <v-row align="center">
+                                    <v-col class="grow"> {{ robot_name }} connected in: {{ robot_ip }}</v-col>
+                                    <v-col class="shrink">
+                                      <v-btn outlined color="success" v-on:click="onConnectPepper()">Restart</v-btn>
+                                    </v-col>
+                                  </v-row>
+                                </v-alert>
+
+                              </v-card>
+                            </div>
+
+                            <div v-if="status_robot_dialog === 'error'">
+                              <v-card color="white" flat>
+                                <v-alert prominent text type="error">
+                                  <v-row align="center">
+                                    <v-col class="grow"> {{ robot_name }} disconnected in: {{robot_ip}}</v-col>
+                                    <v-col class="shrink">
+                                      <v-btn outlined color="error" v-on:click="onConnectPepper()">Restart</v-btn>
+                                    </v-col>
+                                  </v-row>
+                                </v-alert>
+                              </v-card>
+                            </div>
+
+                            <div v-if="status_robot_dialog === 'warning'">
+                              <v-card color="white" flat>
+                                <v-alert prominent text type="warning">
+                                  <v-row align="center">
+                                    <v-col class="grow"> {{ robot_name }} was not connected. Is the robot IP
+                                      ({{ robot_ip }}) correct?. Check if the robot and this computer are in the same
+                                      Wifi network </v-col>
+                                    <v-col class="shrink">
+                                      <v-btn outlined color="warning" v-on:click="onConnectPepper()">Try again</v-btn>
+                                    </v-col>
+                                  </v-row>
+                                </v-alert>
+                              </v-card>
+                            </div>
+                          </v-flex>
+
+                          <v-flex xs12>
+                            <v-card color="white" flat>
+                              &emsp;
+                            </v-card>
+                          </v-flex>
+                        </v-layout>
+
+
+
+                      </v-container>
+                    </v-card>
+                  </div>
+                  <div v-if="model === 'tab-Reactions'">
+                    <rize-table-reaction></rize-table-reaction>
+                  </div>
+                  <div v-if="model === 'tab-Goals'">
+                    <rize-table-goal></rize-table-goal>
+                  </div>
+                  <div v-if="model === 'tab-Modules'">
+                    <rize-table-module></rize-table-module>
+                  </div>
+                </v-card>
+              </v-tab-item>
+            </v-tabs-items>
+            <v-flex xs12 md2>
+              <v-card color="white" flat>
+                &emsp;
+              </v-card>
+            </v-flex>
+            <v-card flat>
+              <v-container grid-list-md text-center>
+                <v-layout wrap align-center justify-center>
+                  <v-flex>
+                    <v-card color="white" flat>
+                      <div>&nbsp;</div>
+                      <img src="images/tuat.png" height="50">
+                      <div>&nbsp;</div>
+                    </v-card>
+                  </v-flex>
+
+                </v-layout>
+              </v-container>
+
+            </v-card>
+            <rize-foot :robot_status_="robot_status"></rize-foot>
+          </v-card>
+      </div>
+      </v-dialog>
+      <v-card>
+
+        <v-app-bar color="deep-purple darken-1" dense dark flat>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-btn class="mx-4" text v-on:click="onCloseBlock" v-on="on">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </template>
+            <span>Main menu</span>
+          </v-tooltip>
+
+
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-btn class="mx-4" text v-on:click="onSaveBlockMenu" v-on="on">
+                <v-icon>mdi-content-save</v-icon>
+              </v-btn>
+            </template>
+            <span>Load</span>
+          </v-tooltip>
+
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-btn class="mx-4" text v-on:click="onUndo" v-on="on">
+                <v-icon>mdi-undo</v-icon>
+              </v-btn>
+            </template>
+            <span>Undo</span>
+          </v-tooltip>
+
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-btn class="mx-4" text v-on:click="onRedo" v-on="on">
+                <v-icon>mdi-redo</v-icon>
+              </v-btn>
+            </template>
+            <span>Redo</span>
+          </v-tooltip>
+
+          <v-spacer></v-spacer>
+          <v-spacer></v-spacer>
+          <div class="text-center">
+            <v-bottom-sheet v-model="sheet" inset>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn class="mx-4" text v-bind="attrs" v-on:click="onHistory" v-on="on">
+                  <v-icon>mdi-history</v-icon>
+                </v-btn>
+              </template>
+              <v-card tile>
+                <v-progress-linear :value="50" class="my-0" height="3"></v-progress-linear>
+
+                <v-list>
+                  <v-list-item>
+                    <v-list-item-content>
+                      <v-col class="d-flex" cols="12" sm="12">
+                        <v-select :items="items_days" label="Day" dense v-model="selected_day"></v-select>
+                      </v-col>
+                    </v-list-item-content>
+
+
+                    <v-list-item-content>
+                      <v-col class="d-flex" cols="12" sm="3" v-on:click="onHistoryDay">
+                        <v-btn small color="primary">Set day</v-btn>
+                      </v-col>
+                    </v-list-item-content>
+
+
+                    <v-list-item-content>
+                      <v-col class="d-flex" cols="12" sm="12">
+                        <v-select :items="items_block" label="Versions" dense v-model="selected_version"></v-select>
+                      </v-col>
+                    </v-list-item-content>
+
+                    <v-list-item-content>
+                      <v-col class="d-flex" cols="12" sm="3" v-on:click="onHistoryVersion">
+                        <v-btn small color="primary">Load</v-btn>
+                      </v-col>
+                    </v-list-item-content>
+
+
+                    <v-list-item-icon>
+                      <v-btn icon v-on:click="onBackElement">
+                        <v-icon>mdi-rewind</v-icon>
+                      </v-btn>
+                    </v-list-item-icon>
+
+
+                    <v-list-item-icon class="ml-0" :class="{ 'mr-3': $vuetify.breakpoint.mdAndUp }">
+                      <v-btn icon v-on:click="onNextElement">
+                        <v-icon>mdi-fast-forward</v-icon>
+                      </v-btn>
+                    </v-list-item-icon>
+                  </v-list-item>
+                </v-list>
+              </v-card>
+            </v-bottom-sheet>
+          </div>
+
+        </v-app-bar>
+
+
+        <v-dialog max-width="400px" v-model="dialog_primitives">
+          <v-card>
+            <v-app-bar flat dense dark color="pink darken-2">
+              <primitive-interface-close></primitive-interface-close>
+              <v-toolbar-title> {{current_primitive.primitive}}</v-toolbar-title>
+              <v-spacer></v-spacer>
+              <v-icon>mdi-tune</v-icon>
+              <v-toolbar-items></v-toolbar-items>
+            </v-app-bar>
+
+            <v-container fluid grid-list-xl>
+              <v-layout wrap align-center>
+                <v-flex xs12 sm12 d-flex></v-flex>
+                </v-flex>
+                <v-flex xs12 sm12 d-flex>
+
+                  <div v-if="current_primitive.input === 'url'">
+                    <v-textarea label="Write URL (web page) here" auto-grow outlined rows="1" row-height="20"
+                      v-model="model_mainInput"> </v-textarea>
+                  </div>
+
+                  <div v-if="current_primitive.input === 'string'">
+                    <v-textarea label="Write text here" auto-grow outlined rows="1" row-height="20"
+                      v-model="model_mainInput"> </v-textarea>
+                  </div>
+
+                  <div v-if="current_primitive.input === 'dropdown'">
+                    <v-select :items="items_dropdown" v-model="model_mainInput" label="select option"></v-select>
+                  </div>
+
+                  <div v-if="current_primitive.input === 'seconds'">
+                    <v-text-field v-model="model_mainInput" type="number" max="500" min="0" suffix="seconds" step=".1"
+                      single-line></v-text-field>
+                  </div>
+
+                </v-flex>
+              </v-layout>
+
+              <v-layout wrap>
+                <v-flex xs12>
+
+                  <div v-for="(value, name) in current_primitive.options">
+
+                    <div v-if="value === 'percentage'">
+
+                      <v-flex xs12>
+                        <v-slider inverse-label v-model="model_options[name]" :label="name" class="align-center"
+                          :max="100" :min="0" step="2" thumb-label="always">
+                        </v-slider>
+                      </v-flex>
+                    </div>
+
+                    <div v-if="value === 'bool'">
+                      <v-checkbox v-model="model_options[name]" :label="name"></v-checkbox>
+                    </div>
+
+                    <div v-if="value === 'dropdown'">
+                      <v-select :items="items_robots" v-model="model_options[name]" filled :label="name"></v-select>
+                    </div>
+
+                    <div v-if="value === 'seconds'">
+                      <v-header>{{name}}</v-header>
+                      <v-text-field v-model="model_options[name]" type="number" max="500" min="0" suffix="seconds"
+                        step=".1" single-line></v-text-field>
+                    </div>
+
+                    <div v-if="value === 'minutes'">
+                      <v-header>{{name}}</v-header>
+                      <v-text-field v-model="model_options[name]" type="number" max="60" min="0" step=".1"
+                        suffix="minutes" single-line></v-text-field>
+                    </div>
+
+                    <div v-if="value === 'hours'">
+                      <v-header>{{name}}</v-header>
+                      <v-text-field v-model="model_options[name]" type="number" max="23" min="0" step=".1"
+                        suffix="hours" single-line></v-text-field>
+                    </div>
+
+                    <div v-if="value === 'degrees'">
+                      <v-header>{{name}}</v-header>
+                      <v-text-field v-model="model_options[name]" type="number" max="360" min="0" step="1"
+                        suffix="degree" single-line></v-text-field>
+                    </div>
+
+                    <div v-if="value === 'meters'">
+                      <v-header>{{name}}</v-header>
+                      <v-text-field v-model="model_options[name]" type="number" max="100" min="0" step=".1"
+                        suffix="meters" single-line></v-text-field>
+                    </div>
+
+
+                    <div v-if="value === 'number'">
+                      <v-header>{{name}}</v-header>
+                      <v-text-field v-model="model_options[name]" label="value" type="number" step="1" single-line>
+                      </v-text-field>
+                    </div>
+
+                  </div>
+                </v-flex>
+              </v-layout>
+
+              <v-spacer></v-spacer>
+
+              <v-layout wrap align-center>
+                &nbsp;
+                <v-spacer></v-spacer>
+                <v-btn outlined color="success" text v-on:click="onSetPrimitive">Set</v-btn> &nbsp;
+                &nbsp;
+              </v-layout>
+            </v-container>
+
+            </v-list>
+            <v-list three-line subheader></v-list>
+          </v-card>
+        </v-dialog>
+        <!-- Save wait dialog  -->
+
+        <!-- Module selector dialog  -->
+        <v-dialog max-width="400px" v-model="dialog_modules">
+          <v-card>
+            <v-app-bar flat dense dark color="pink darken-2">
+              <v-btn icon dark @click.native="dialog_modules = false">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+              <v-toolbar-title> Select module</v-toolbar-title>
+              <v-spacer></v-spacer>
+              <v-icon>mdi-tune</v-icon>
+              <v-toolbar-items></v-toolbar-items>
+            </v-app-bar>
+            <v-container fluid grid-list-xl>
+              <v-layout wrap align-center>
+                <v-flex xs12 sm12 d-flex></v-flex>
+                </v-flex>
+                <v-flex xs12 sm12 d-flex>
+                  <v-combobox v-model="chips_modules" :items="items_modules" label="select module" chips text outlined>
+                  </v-combobox>
+                </v-flex>
+              </v-layout>
+              <v-spacer></v-spacer>
+
+              <v-layout wrap align-center>
+                &nbsp;
+                <v-spacer></v-spacer>
+                <v-btn color="success" outlined v-on:click="onSetModuleName">Set</v-btn> &nbsp;
+                &nbsp;
+              </v-layout>
+            </v-container>
+
+            </v-list>
+            <v-list three-line subheader></v-list>
+          </v-card>
+        </v-dialog>
+
+
+        <v-dialog max-width="400px" v-model="dialog_patterns">
+          <v-card>
+            <v-app-bar flat dense dark color="purple darken-2">
+              <v-btn icon dark @click.native="dialog_patterns = false">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+              <v-toolbar-title> Select Pattern</v-toolbar-title>
+              <v-spacer></v-spacer>
+              <v-icon>mdi-tune</v-icon>
+              <v-toolbar-items></v-toolbar-items>
+            </v-app-bar>
+            <v-container fluid grid-list-xl>
+              <v-layout wrap align-center>
+                <v-flex xs12 sm12 d-flex></v-flex>
+                </v-flex>
+                <v-flex xs12 sm12 d-flex>
+                  <v-combobox v-model="chips_patterns" :items="items_patterns" label="select module" chips text
+                    outlined>
+                  </v-combobox>
+                </v-flex>
+              </v-layout>
+              <v-spacer></v-spacer>
+
+              <v-layout wrap align-center>
+                &nbsp;
+                <v-spacer></v-spacer>
+                <v-btn color="success" outlined v-on:click="onSetPatternName">Set</v-btn> &nbsp;
+                &nbsp;
+              </v-layout>
+            </v-container>
+
+            </v-list>
+            <v-list three-line subheader></v-list>
+          </v-card>
+        </v-dialog>
+
+
+      </v-card>
+      <blocks-foot :current_type="current_type"></blocks-foot>
+    </v-app>
+  </div>
+
+
+  <div id="main">
+    <!-- main -->
+    <div id="blocklyArea">
+      <!-- blocklyArea -->
+      <div id="blocklyDiv" style="position: absolute;"></div>
+      <p></p>&nbsp;
+    </div> <!-- blocklyArea -->
+  </div> <!-- main -->
+
+
+
+  <script>
+
+    var opsys = process.platform;
+    var jquery = require("jquery");
+    //var rize = require('rize-js');
+    var script_path = require('path');
+    var os = require('os');
+    // NEP-RIZE objects
+    var rizeObject = new Rize(); // Rize funtions
+
+  </script>
+
+  <script src="web/vue.js"></script>
+  <script src="web/vuetify/dist/vuetify.js"></script>
+  <script src="vue/primitive-interface-close.js"></script>
+  <script src="vue/RizeMenu.js"></script>
+  <script src="vue/WelcomeSocial.js"></script>
+  <script src="vue/RizeFoot.js"></script>
+  <script src="vue/DialogSend.js"></script>
+  <script src="vue/DialogPosture.js"></script>
+  <script src="vue/BlocksFoot.js"></script>
+  <script src="vue/rize-tables.js"></script>
+
+  <script src="developer/settings.js"></script>
+  <script src="rize/RizeBlockly.js"></script>
+  <script src="AppVueMinix.js"></script>
+  <script src="AppVue.js"></script>
+  <script src="nao.js"></script>
+
+
+</body>
+
+
+<script>
+
+
+
+  var Nep = require("nep-js");
+  var Sharo = require("sharo");
+  program_running = false;
+
+  // FSM ------------
+  var interaction_state = "idle"
+  // Node JS require 
+  const { spawn } = require('child_process');
+  const axios = require('axios');
+  //var kapuccino = require('kapuccino');
+  var sharo_active_action = {};
+  var NepNode = new Nep.Node("rize", 5)
+  var btManager = new BTManager(NepNode); // BT for execution of behaviors
+  var btSharo = new BTManager(NepNode); // BT for sharo execution
+  var bt_blocks = new BehaviorTree();
+  var sharo = new Sharo.Blackboard(NepNode, false);
+
+
+  var callback_event = function (msg) {
+    console.log(msg)
+    var robot_status = msg["robot"]
+    if (robot_status === "ready") {
+      AppVue.robot_status = "Robot " + AppVue.chips_robots + " is connected"
+      AppVue.status_robot_dialog = "success"
+      AppVue.text_robot = rize_robot + " robot connected :)"
+    }
+    if (robot_status === "connection_error") {
+      AppVue.robot_status = "Robot " + AppVue.chips_robots + " was not found"
+      AppVue.status_robot_dialog = "warning"
+      AppVue.text_robot = rize_robot + " robot not found :("
+    }
+
+    if (robot_status === "execution_error") {
+      AppVue.robot_status = "Robot " + AppVue.chips_robots + " is disconnected"
+      AppVue.status_robot_dialog = "error"
+      AppVue.text_robot = rize_robot + " robot disconnected :("
+    }
+
+  }
+
+  NepNode.new_sub("rize_event", "json", callback_event);
+  var program_running = false
+
+
+  // Run specific robot action
+  function onRunAction(action) {
+    stopProgram()
+    response = btManager.tick(action)
+    console.log(action)
+  }
+
+
+  var callback_action = function (msg) {
+    console.log(msg)
+    var id_ = msg["id"]
+    var state = msg["state"]
+    if (id_ === sharo_active_action["id"]) {
+      sharo_active_action["state"] = state
+    }
+    console.log("Action: " + id_ + " return " + state)
+  }
+  NepNode.new_sub("action_state", "json", callback_action);
+  var sharo_pub = NepNode.new_pub("/blackboard", "json");
+
+
+  var set_goal_time = function (node) {
+
+    if (node["name"] in goals_bt_json) {
+
+      //goals_bt_json.node["name"]["time"] = performance.now()
+    }
+    return "success"
+  }
+
+
+  var set_reaction_time = function (node) {
+
+    if (node["name"] in reactions_bt_json) {
+      //reactions_bt_json["name"]["time"] = performance.now()
+    }
+    return "success"
+  }
+
+  var activateLastGoalAction = function (tree) {
+    console.log(" --- Reset latest goal action ---- ")
+    response = btManager.tickReset(tree)
+    return response
+  }
+
+  var doCancel = function () {
+    response = btManager.tick({ "node": "cancel", "state": "active" })
+  }
+
+  var checkCancelConditional = function () {
+    if (Object.keys(current_goal["cancel"]).length === 0)
+      return "failure"
+    else {
+
+      result = btManager.tick(self.current_goal["cancel"])
+      if (result === "success") {
+        return "success"
+      }
+
+      else {
+        return "failure"
+      }
+
+    }
+
+  }
+
+  var runProgramTimer = "";
+
+  var stopProgram = function () {
+    interaction_state = "idle"
+    try {
+      clearInterval(runProgramTimer)
+    } catch (error) {
+      console.log("no program executed")
+    }
+    try {
+      clearInterval(runModuleTimer);
+    } catch (error) {
+      console.log("no module executed")
+    }
+
+    program_running = false
+
+  }
+
+  var runProgram = function () {
+
+    AppVue.SaveProject()
+    AppVue.onLoadJSFunctions()
+    AppVue.onBuildBTProgram()
+    AppVue.SaveProject()
+    AppVue.onLoadJSFunctions()
+    AppVue.onBuildBTProgram()
+
+    stopProgram();
+    program_running = true
+
+    var path_project = rizeObject.directoryProjects + "/" + project_name + "/";
+    reactions_list_paths = []
+    goals_list_paths = []
+
+    reactions_bt_list = []
+    goals_bt_list = []
+    reactions_bt_json = {}
+    goals_bt_json = {}
+
+    console.log("GOALS")
+    AppVue.rizeGoals.forEach(element => {
+      let tempath = path_project + "goal/json/" + "goal_" + element.name + ".json"
+      tempath["time"] = 0
+      console.log(element.name)
+      goals_list_paths.push(tempath)
+    });
+
+    goals_list_paths.forEach(element => {
+      let tempbt = rizeObject.onReadJSONFile(element)
+      goals_bt_list.push(tempbt)
+      goals_bt_json[tempbt.name] = tempbt
+
+    });
+
+    console.log(goals_bt_list)
+    console.log("REACTIONS")
+
+    AppVue.rizeReactions.forEach(element => {
+      let tempath = path_project + "reaction/json/" + "reaction_" + element.name + ".json"
+      tempath["time"] = 0
+      console.log(tempath)
+      reactions_list_paths.push(tempath)
+    });
+
+    reactions_list_paths.forEach(element => {
+      let tempbt = rizeObject.onReadJSONFile(element)
+      reactions_bt_list.push(tempbt)
+      reactions_bt_json[tempbt.name] = tempbt
+    });
+    console.log(reactions_bt_list)
+    runProgramTimer = setInterval(ProgramTimer, 1000);
+
+    // ----------------------------------------------------------------
+  }
+
+  var ProgramTimer = function () {
+    console.log(interaction_state)
+
+    // ------------ IDLE --------------
+    if (interaction_state === "idle") {
+
+      // Check if any goal is active
+      goals = btManager.checkActiveBehaviors(goals_bt_list)
+      if (goals.length > 0) {
+        // Get most relevant goal
+        current_goal = JSON.parse(JSON.stringify(goals[0]));
+        // Set activation time of goal
+        set_goal_time(current_goal) // TO FSM
+        // Set state goal
+        interaction_state = "goal"
+        console.log(" --- STATE: " + " goal " + " --- ")
+        console.log(" * Goal active: " + goals[0]["name"] + " * ")
+      }
+      else {
+        reactions = btManager.checkActiveBehaviors(reactions_bt_list)
+        if (reactions.length > 0) {
+          console.log(reactions)
+          // Get most relevant reaction
+          current_reaction = JSON.parse(JSON.stringify(reactions[0]))
+          // Set activation time of reaction
+          set_reaction_time(current_reaction) // TO FSM
+          // Set state reaction
+          interaction_state = "reaction"
+          console.log(" --- STATE: " + " reaction " + " --- ")
+          console.log(" * Reaction active: " + reactions[0]["name"] + " * ")
+        }
+      }
+    }
+
+    if (interaction_state === "reaction") {
+      response = btManager.tick(current_reaction["bt"])
+
+      if (response === "success" || response === "failure") {
+        // If not goal executed
+
+        console.log("GOALS ACTIVE")
+        console.log(current_goal)
+        console.log(Object.keys(current_goal).length)
+
+        if (Object.keys(current_goal).length > 0) {
+          if (Object.keys(current_goal["return_bt"]).length > 0) {
+            return_bt = JSON.parse(JSON.stringify(current_goal["return_bt"]))
+            interaction_state = "continue_goal"
+            console.log(" --- STATE: " + " continue goal " + " --- ")
+          }
+          else {
+            activateLastGoalAction(current_goal["bt"])
+            interaction_state = "goal"
+            console.log(" --- STATE: " + " return goal " + " --- ")
+          }
+
+        }
+        else {
+          interaction_state = "idle"
+          console.log(" --- STATE: " + " idle " + " --- ")
+        }
+
+      }
+    }
+
+    if (interaction_state === "continue_goal") {
+
+      try {
+
+        if ("return_bt" in self.current_goal) {
+          response = btManager.tick(return_bt)
+          if (response === "success" || response === "failure") {
+            activateLastGoalAction(current_goal["bt"])
+            interaction_state = "goal"
+            console.log(" --- STATE: " + " return goal " + " --- ")
+          }
+        }
+        else {
+          interaction_state = "goal"
+          activateLastGoalAction(current_goal["bt"])
+          console.log(" --- STATE: " + " return goal " + " --- ")
+        }
+
+
+      } catch (error) {
+        interaction_state = "goal"
+        console.log(" --- STATE: " + " return goal " + " --- ")
+      }
+
+    }
+
+    if (interaction_state === "cancel_goal") {
+      if ("stop_bt" in self.current_goal) {
+        if (Object.keys(current_goal["stop_bt"]).length > 0) {
+          response = btManager.tick(current_goal["stop_bt"])
+          if (response === "success" || response === "failure") {
+            current_goal = {}
+            interaction_state = "idle"
+            console.log(" --- STATE: " + " idle " + " --- ")
+          }
+          else {
+            current_goal = {}
+            interaction_state = "idle"
+            console.log(" --- STATE: " + " idle " + " --- ")
+          }
+
+        }
+        else {
+          current_goal = {}
+          interaction_state = "idle"
+          console.log(" --- STATE: " + " idle " + " --- ")
+        }
+      }
+    }
+
+    if (interaction_state === "goal") {
+      reactions = btManager.checkActiveBehaviors(reactions_bt_list)
+      console.log("REACTIONS ACTIVE")
+      console.log(reactions)
+      if (reactions.length > 0) {
+        // Get most relevant reaction
+        current_reaction = JSON.parse(JSON.stringify(reactions[0]))
+        // Set activation time of reaction
+        set_reaction_time(current_reaction) // TO FSM
+        // Cancel action
+        doCancel()
+        // Set state reaction
+        interaction_state = "reaction"
+        console.log(" --- STATE: " + " reaction from goal " + " --- ")
+      }
+      else {
+        // Is a goal canceled
+        let canceled = checkCancelConditional()
+        if (canceled === "success") {
+          doCancel()
+          interaction_state = "cancel_goal"
+          console.log(" --- STATE: " + " cancel goal " + " --- ")
+        }
+        else {
+          response = btManager.tick(current_goal["bt"])
+          if (response === "success" || response === "failure") {
+            current_goal = {}
+            interaction_state = "idle"
+            console.log(" --- STATE: " + " idle " + " --- ")
+          }
+        }
+      }
+    }
+  }
+
+  var runModule = function (bt) {
+
+    btRun = bt
+    var folder = rizeObject.pathRIZE;
+
+    var reactions_list = []
+    var goals_list = []
+    var json_value = {}
+    var result = "running"
+    console.log(btRun)
+
+    runModuleTimer = setInterval(myTimer, 100);
+
+    function myTimer() {
+      response = btManager.tick(btRun)
+      console.log("Response: " + response)
+      if (response === "success") {
+        console.log("---- Module executed ----")
+        clearInterval(runModuleTimer);
+      }
+
+    }
+
+  }
+
+  btManager.setBlackboardModel(sharo.sharo_model)
+  btSharo.setBlackboardModel(sharo.sharo_model)
+
+
+  function CheckActive() {
+    var reactions = []
+    var goals = []
+
+    for (var key_e in reactions_bt_json) {
+      if (btSharo.tick(reactions_bt_json[key_e]["activate"]) === "success") {
+        reactions.push({
+          "name": key_e, "utility": reactions_bt_json[key_e]["utility"]
+        })
+      }
+    }
+    var active_goals = []
+    for (var key_e in goals_bt_json) {
+      if (btSharo.tick(goals_bt_json[key_e]["activate"]) === "success") {
+
+        goals.push({
+          "name": key_e, "utility": goals_bt_json[key_e]["utility"]
+        })
+      }
+    }
+    active_reactions = reactions
+    active_goals = goals
+
+    cancel_goals = []
+    //pub_event.publish({ "active_reactions": active_reactions, "active_goals": active_goals, "cancel_goals": cancel_goals })
+  }
+
+  AppVue.dialog_start = true
+
+
+  var update_short_memory = function () {
+
+    var current_time = performance.now();
+    let difference = 0;
+    for (var key_m in sharo.sharo_model) {
+      for (var key in sharo.sharo_model[key_m]) {
+        var primitive_time = sharo.sharo_model[key_m][key]["time"]
+        difference = Math.abs(current_time - primitive_time)
+        if (difference > sharo_forgot_time * 1000) {
+          if (sharo_debug === true) {
+            console.log(key_m + ": " + key + " forgotten and set to 0")
+          }
+          sharo.sharo_model[key_m][key]["value"] = 0
+        }
+      }
+    }
+  }
+
+  var shortMemoryTimer = setInterval(update_short_memory, 100);
+  var EventTimer = setInterval(CheckActive, 100);
+
+  const { exec } = require('child_process');
+
+  // NEW ------------------------------------------------
+  const { webFrame } = require('electron')
+  webFrame.setZoomFactor(.95)
+
+
+  var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  var d = new Date();
+  var day = days[d.getDay()];
+  var hr = d.getHours();
+  var min = d.getMinutes();
+  if (min < 10) {
+    min = "0" + min;
+  }
+  var ampm = "am";
+  if (hr > 12) {
+    hr -= 12;
+    ampm = "pm";
+  }
+  var date = d.getDate();
+  var month = months[d.getMonth()];
+  var year = d.getFullYear();
+
+
+
+  var fsm = new StateMachine({
+    init: 'start',
+    transitions: [
+      { name: 'StopProgram', from: 'idle', to: 'start' },
+      { name: 'StopProgram', from: 'reaction', to: 'start' },
+      { name: 'StopProgram', from: 'goal', to: 'start' },
+      { name: 'StopProgram', from: 'continueg', to: 'start' },
+      { name: 'StopProgram', from: 'cancelg', to: 'start' },
+      { name: 'StartProgram', from: 'start', to: 'idle' },
+
+      { name: 'ReactionActive', from: 'idle', to: 'reaction' },
+      { name: 'ReactionActive', from: 'goal', to: 'reaction' },
+      { name: 'GoalActive', from: 'idle', to: 'goal' },
+      { name: 'ReturnGoal', from: 'reaction', to: 'continueg' },
+      { name: 'ReactionFinished', from: 'reaction', to: 'idle' },
+      { name: 'GoalFinished', from: 'goal', to: 'idle' },
+      { name: 'ReturnGoal', from: 'continueg', to: 'goal' },
+      { name: 'CancelGoal', from: 'goal', to: 'cancelg' },
+      { name: 'GoalFinished', from: 'cancelg', to: 'idle' },
+
+    ],
+    methods: {
+      onGoal: function () {
+        console.log('I am in goal')
+
+      },
+      onReaction: function () {
+        console.log('I am in reaction')
+      },
+      onIdle: function () {
+        console.log('I am idle')
+      },
+      onContinueg: function () {
+        console.log('I am returning to goal')
+      },
+      onCancelg: function () {
+        console.log('I am canceling goal')
+      },
+    }
+  });
+
+</script>
+
+</html>

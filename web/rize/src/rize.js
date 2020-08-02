@@ -1,10 +1,11 @@
- class Rize {
+class Rize {
 
   constructor() {
     this.path = require('path');
     this.fs = require('fs');
     this.opsys = process.platform;
     this.pathRIZE = 'C:/Rize'
+    this.version = 'Initial'
 
     if (this.opsys == "darwin") {
       this.opsys = "MacOS";
@@ -14,7 +15,7 @@
       this.pathRIZE = 'C:/Rize'
     } else if (this.opsys == "linux") {
       this.opsys = "Linux";
-      this.pathRIZE = process.env.HOME  + '/Documents/Rize'
+      this.pathRIZE = process.env.HOME + '/Documents/Rize'
     }
 
     this.pathDeveloper = this.pathRIZE + '/developer';
@@ -38,33 +39,38 @@
 
   // Create folders of the project
   onSaveBlockProgram(project_name) {
-    var path_project = this.directoryProjects + "/" + project_name
-    this.onCreateFolder(path_project)
-    this.onCreateFolder(path_project + "/goal")
-    this.onCreateFolder(path_project + "/goal/js")
-    this.onCreateFolder(path_project + "/goal/json")
-    this.onCreateFolder(path_project + "/goal/xml")
-    this.onCreateFolder(path_project + "/reaction")
-    this.onCreateFolder(path_project + "/reaction/js")
-    this.onCreateFolder(path_project + "/reaction/json")
-    this.onCreateFolder(path_project + "/reaction/xml")
-    this.onCreateFolder(path_project + "/module")
-    this.onCreateFolder(path_project + "/module/js")
-    this.onCreateFolder(path_project + "/module/json")
-    this.onCreateFolder(path_project + "/module/xml")
-    this.onCreateFolder(path_project + "/behavior")
-    this.onCreateFolder(path_project + "/behavior/js")
-    this.onCreateFolder(path_project + "/behavior/json")
-    this.onCreateFolder(path_project + "/behavior/xml")
-
-
+    this.pathProject = this.directoryProjects + "/" + project_name
+    this.onCreateFolder(this.pathProject)
   }
 
+
+  onSaveBlockVersion(version) {
+    this.pathVersion = this.directoryProjects + "/" + project_name + "/versions/" + version
+    this.onCreateFolder(this.directoryProjects + "/" + project_name + "/versions")
+    this.onCreateFolder(this.pathVersion)
+    this.onCreateFolder(this.pathVersion + "/goal")
+    this.onCreateFolder(this.pathVersion + "/goal/js")
+    this.onCreateFolder(this.pathVersion + "/goal/json")
+    this.onCreateFolder(this.pathVersion + "/goal/xml")
+    this.onCreateFolder(this.pathVersion + "/reaction")
+    this.onCreateFolder(this.pathVersion + "/reaction/js")
+    this.onCreateFolder(this.pathVersion + "/reaction/json")
+    this.onCreateFolder(this.pathVersion + "/reaction/xml")
+    this.onCreateFolder(this.pathVersion + "/module")
+    this.onCreateFolder(this.pathVersion + "/module/js")
+    this.onCreateFolder(this.pathVersion + "/module/json")
+    this.onCreateFolder(this.pathVersion + "/module/xml")
+    this.onCreateFolder(this.pathVersion + "/behavior")
+    this.onCreateFolder(this.pathVersion + "/behavior/js")
+    this.onCreateFolder(this.pathVersion + "/behavior/json")
+    this.onCreateFolder(this.pathVersion + "/behavior/xml")
+  }
+
+
   // Create JS files with functions
-  onBuildBlockCodeJS(project_name) {
+  onBuildBlockCodeJS(project_name, version) {
 
-    var path_project = this.directoryProjects + "/" + project_name
-
+    var path_project = this.directoryProjects + "/" + project_name + "/versions/" + version
     var reaction_files = this.onGetListFiles(path_project + "/reaction/js")
     var goals_files = this.onGetListFiles(path_project + "/goal/js")
     var behaviors_files = this.onGetListFiles(path_project + "/behavior/js")
@@ -123,10 +129,10 @@
       let full_path = this.pathDeveloper + "/databases/primitives.json"
       let primtives = this.onReadJSONFile(full_path);
       return primtives
-      
+
     } catch (error) {
 
-      let full_path = __dirname+ "/developer/databases/primitives.json"
+      let full_path = __dirname + "/developer/databases/primitives.json"
       let primtives = this.onReadJSONFile(full_path);
       return primtives
     }

@@ -316,21 +316,7 @@
                   <v-list-item>
                     <v-list-item-content>
                       <v-col class="d-flex" cols="12" sm="12">
-                        <v-select :items="items_days" label="Day" dense v-model="selected_day"></v-select>
-                      </v-col>
-                    </v-list-item-content>
-
-
-                    <v-list-item-content>
-                      <v-col class="d-flex" cols="12" sm="3" v-on:click="onHistoryDay">
-                        <v-btn small color="primary">Set day</v-btn>
-                      </v-col>
-                    </v-list-item-content>
-
-
-                    <v-list-item-content>
-                      <v-col class="d-flex" cols="12" sm="12">
-                        <v-select :items="items_block" label="Versions" dense v-model="selected_version"></v-select>
+                        <v-select :items="items_block" label="" dense v-model="selected_version"></v-select>
                       </v-col>
                     </v-list-item-content>
 
@@ -760,7 +746,7 @@
 
     console.log("GOALS")
     AppVue.rizeGoals.forEach(element => {
-      let tempath = path_project + "goal/json/" + "goal_" + element.name + ".json"
+      let tempath = path_project + "/versions/" + AppVue.project.version + "/goal/json/" + "goal_" + element.name + ".json"
       tempath["time"] = 0
       console.log(element.name)
       goals_list_paths.push(tempath)
@@ -777,7 +763,7 @@
     console.log("REACTIONS")
 
     AppVue.rizeReactions.forEach(element => {
-      let tempath = path_project + "reaction/json/" + "reaction_" + element.name + ".json"
+      let tempath = path_project + "/versions/" + AppVue.project.version + "/reaction/json/" + "reaction_" + element.name + ".json"
       tempath["time"] = 0
       console.log(tempath)
       reactions_list_paths.push(tempath)
@@ -1050,6 +1036,45 @@
   var year = d.getFullYear();
 
 
+
+  var path = require('path');
+  var fs = require('fs');
+
+  var copyFileSync = function (source, target) {
+
+    var targetFile = target;
+
+    //if target is a directory a new file with the same name will be created
+    if (fs.existsSync(target)) {
+      if (fs.lstatSync(target).isDirectory()) {
+        targetFile = path.join(target, path.basename(source));
+      }
+    }
+    fs.writeFileSync(targetFile, fs.readFileSync(source));
+  }
+
+  var copyFolderRecursiveSync = function (source, target) {
+    var files = [];
+
+    //check if folder needs to be created or integrated
+    var targetFolder = path.join(target, path.basename(source));
+    if (!fs.existsSync(targetFolder)) {
+      fs.mkdirSync(targetFolder);
+    }
+
+    //copy
+    if (fs.lstatSync(source).isDirectory()) {
+      files = fs.readdirSync(source);
+      files.forEach(function (file) {
+        var curSource = path.join(source, file);
+        if (fs.lstatSync(curSource).isDirectory()) {
+          this.copyFolderRecursiveSync(curSource, targetFolder);
+        } else {
+          this.copyFileSync(curSource, targetFolder);
+        }
+      });
+    }
+  }
 
   var fsm = new StateMachine({
     init: 'start',

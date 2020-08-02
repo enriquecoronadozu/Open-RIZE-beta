@@ -150,7 +150,7 @@ var AppVue = new Vue({
     onLoadJSFunctions: function () {
 
       // Convert main.js to BT JSON specifications
-      jquery.getScript(rizeObject.getPathProjects() + "/" + project_name + "/code.js", function (data, textStatus, jqxhr) {
+      jquery.getScript(rizeObject.getPathProjects() + "/" + project_name + "/versions/" +  this.project.version + "/code.js", function (data, textStatus, jqxhr) {
         //console.log("Saving goals as BT ...")
         list_goals = [];
         names_goals = [];
@@ -215,9 +215,9 @@ var AppVue = new Vue({
       this.text_code = code;
       // Save mesage to send
 
-      let path = rizeObject.getPathProjects() + "/" + AppVue.project.name + "/" + AppVue.current_type + "/js/" + AppVue.block_name + ".js"
+      let path = rizeObject.getPathProjects() + "/" + AppVue.project.name + "/versions/" + AppVue.project.version + "/" + AppVue.current_type + "/js/" + AppVue.block_name + ".js"
       rizeObject.onSaveFileSync(path, code)
-      path = rizeObject.getPathProjects() + "/" + AppVue.project.name + "/" + AppVue.current_type + "/xml/" + AppVue.block_name + ".xml"
+      path = rizeObject.getPathProjects() + "/" + AppVue.project.name + "/versions/" + AppVue.project.version + "/" + AppVue.current_type + "/xml/" + AppVue.block_name + ".xml"
       rizeObject.onSaveFileSync(path, xml_module)
 
       this.SaveProject()
@@ -228,15 +228,9 @@ var AppVue = new Vue({
 
     onBuildBTProgram: function () {
 
-      //console.log(list_goals)
-      //console.log(names_goals)
-      //console.log(list_reactions)
-      //console.log(names_reactions)
-      //console.log(this.project.idle_behavior_name)
-
 
       let path_projects = rizeObject.getPathProjects()
-      let path_project = path_projects + "/" + project_name
+      let path_project = path_projects + "/" + this.project.name + "/versions/" + this.project.version
       rizeObject.onCreateFolder(path_project + "/" + "goal/json")
       rizeObject.onCreateFolder(path_project + "/" + "reaction/json")
 
@@ -246,7 +240,7 @@ var AppVue = new Vue({
       var l_reactions = names_reactions
       var code_reactions = list_reactions
 
-      var path = path_projects + "/" + project_name + "/goal/json"
+      var path = path_projects + "/" + project_name + "/versions/" + this.project.version +  "/goal/json"
       for (let index = 0; index < names_goals.length; index++) {
         const element = names_goals[index];
         var path_ = path + "/" + element + ".json"
@@ -254,7 +248,7 @@ var AppVue = new Vue({
         rizeObject.onSaveJSON(path_, code_goals[index])
       }
 
-      var path = path_projects + "/" + project_name + "/reaction/json"
+      var path = path_projects + "/" + project_name + "/versions/" + this.project.version + "/reaction/json"
       for (let index = 0; index < names_reactions.length; index++) {
         const element = names_reactions[index]
         var path_ = path + "/" + element + ".json"

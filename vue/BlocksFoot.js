@@ -65,7 +65,7 @@ var BlocksFoot = {
       AppVue.onLoadJSFunctions()
       AppVue.onBuildBTProgram()
 
-      var path =  rizeObject.directoryProjects  + "/" + project_name + "/" + AppVue.current_type + "/json/" + AppVue.current_type + "_" + AppVue.block_name + ".json"
+      var path =  rizeObject.directoryProjects  + "/" + project_name + "/versions/" +  AppVue.project.version + "/"+ AppVue.current_type + "/json/" + AppVue.current_type + "_" + AppVue.block_name + ".json"
       console.log(path)
 
       var module = rizeObject.onReadJSONFile(path)
@@ -90,7 +90,7 @@ var BlocksFoot = {
         AppVue.onLoadJSFunctions()
         AppVue.onBuildBTProgram()
 
-        var path = rizeObject.directoryProjects  + "/" + project_name + "/" + AppVue.current_type + "/json/" + AppVue.current_type + "_" + block_name + ".json"
+        var path = rizeObject.directoryProjects  + "/" + project_name + "/versions/" +  AppVue.project.version + "/"+ AppVue.current_type + "/json/" + AppVue.current_type + "_" + block_name + ".json"
         console.log(path)
 
         var module = rizeObject.onReadJSONFile(path)

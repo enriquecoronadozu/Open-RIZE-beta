@@ -13,6 +13,8 @@ var RizeMenu = {
       dialog_new: false,
       robot_selected: "Pepper",
       dialog_pepper: false,
+      dialog_version: false,
+      dialog_version_load: false,
       dialog_config: false,
       dialog_speech: false,
       speech_color: "primary",
@@ -32,6 +34,9 @@ var RizeMenu = {
       leds_feedback: true,
       speech_on: false,
       program_started: false,
+      new_version: "",
+      items_version: ["Intial"],
+      version_selected: "",
       project: {
         name: "",               // Current project name
         selected_project: '',
@@ -39,6 +44,21 @@ var RizeMenu = {
         words: "",
         sentences: "",
       },
+
+      headers_version: [
+        {
+          text: 'Name',
+          align: 'start',
+          value: 'name',
+        },
+        { text: 'Date', value: 'date' },
+      ],
+      version_values: [
+        {
+          name: 'Init',
+          date: "No saved",
+        },
+      ],
 
       dialog: false,
       headers: [
@@ -151,7 +171,7 @@ var RizeMenu = {
       console.log(this.list_v)
       console.log(this.speech_feedback)
       console.log(this.leds_feedback)
-      speechStart(this.list_v,this.speech_feedback,this.leds_feedback)
+      speechStart(this.list_v, this.speech_feedback, this.leds_feedback)
     },
 
     onStopSpeech() {
@@ -184,7 +204,8 @@ var RizeMenu = {
           alert("Other project have the same name");
         }
         else {
-          console.log(project_name)
+          AppVue.project.name = "_" + this.project.name
+          console.log(AppVue.project.name)
           AppVue.CleanProject()
           AppVue.SaveProject()
           this.onCloseNewProjectDialog()
@@ -195,6 +216,7 @@ var RizeMenu = {
           this.dialog_new = false;
           AppVue.onLoadJSFunctions()
           this.program_started = true
+          this.project.name = ""
         }
       }
       else {
@@ -204,6 +226,16 @@ var RizeMenu = {
       }
 
 
+    },
+
+    onConsole() {
+      var { ipcRenderer } = require('electron')
+      console.log(ipcRenderer.sendSync('synchronous-message', 'ping')) // prints "pong"
+
+      ipcRenderer.on('asynchronous-reply', (event, arg) => {
+        console.log(arg) // prints "pong"
+      })
+      ipcRenderer.send('asynchronous-message', 'ping')
     },
 
     // Save project
@@ -249,6 +281,8 @@ var RizeMenu = {
       AppVue.project.selected_project = value
       console.log("selected project is: " + value)
     },
+
+
     onLoadProjectsList: function () {
 
       this.dialog_load = true
@@ -313,7 +347,7 @@ var RizeMenu = {
 
 
     NewStart: function () {
-  
+
       AppVue.dialog_start = false
       this.dialog_new = true
 
@@ -340,8 +374,113 @@ var RizeMenu = {
       });
     },
 
-    onStartROS:function()
-    {
+    onCreateNewVersion: function () {
+
+      this.dialog_version = false
+
+      var path_project = rizeObject.directoryProjects + "/" + AppVue.project.name
+      var path_folder = path_project + "/versions/" + this.new_version
+      rizeObject.onCreateFolder(path_folder)
+      var source_files = rizeObject.directoryProjects + "/" + AppVue.project.name + "/versions/" + AppVue.project.version
+      console.log(source_files)
+      console.log(path_folder)
+      copyFolderRecursiveSync(source_files + "/behavior", path_folder)
+      copyFolderRecursiveSync(source_files + "/goal", path_folder)
+      copyFolderRecursiveSync(source_files + "/module", path_folder)
+      copyFolderRecursiveSync(source_files + "/reaction", path_folder)
+      copyFileSync(source_files + "/config.json", path_folder)
+
+
+      AppVue.project.version = this.new_version
+      console.log(this.new_version)
+
+      var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      var d = new Date();
+      var day = days[d.getDay()];
+      var hr = d.getHours();
+      var min = d.getMinutes();
+
+
+      if (min < 10) {
+        min = "0" + min;
+      }
+
+      var date = d.getDate();
+      var month = d.getMonth();
+      var year = d.getFullYear();
+
+      if (month < 10) {
+        month = "0" + month;
+      }
+
+      AppVue.global_versions[this.new_version] = year + "/" + month + "/" + date + " " + hr + ":" + min
+
+      this.new_version = ""
+    },
+
+    onCreateNewBranch: function () {
+
+      this.dialog_version = true
+
+    },
+
+    onCreateLoadBranch: function () {
+
+
+      this.version_values = []
+      this.items_version = []
+
+      for (const [key, value] of Object.entries(AppVue.global_versions)) {
+        this.version_values.push({ name: key, date: value })
+        this.items_version.push(key)
+      }
+
+      this.dialog_version_load = true
+
+    },
+
+    onLoadVersion: function () {
+
+      AppVue.project.version = this.version_selected
+      this.dialog_version_load = false;
+      console.log(AppVue.project.version);
+
+
+      let full_path = rizeObject.directoryProjects + "/" + AppVue.project.name + "/versions/" + this.version_selected + "/config.json"
+      let config = rizeObject.onReadJSONFile(full_path);
+
+
+      AppVue.project.words = config.words
+      AppVue.project.sentences = config.sentences
+      AppVue.project.name = config.name
+      AppVue.project.chips_robots = config.name
+      AppVue.project.chips_language = config.language
+      AppVue.project.robot_ip = config.robot_ip
+      AppVue.project.robot_name = config.robot_name
+      AppVue.rizeReactions = config.rizeReactions
+      AppVue.rizeGoals = config.rizeGoals
+      AppVue.rizeModules = config.rizeModules
+      AppVue.project.volume = config.volume
+      
+
+
+      AppVue.model = "Home"
+      this.dialog_load = false
+      this.program_started = true
+
+      this.robot_selected = AppVue.project.robot_name
+      this.robot_ip = AppVue.project.robot_ip
+
+
+      AppVue.robot_ip = config.robot_ip
+      AppVue.robot_name = config.robot_name
+      this.robot_name = AppVue.project.robot_name
+
+    },
+
+
+
+    onStartROS: function () {
       console.log("Start rosbridge in:" + json_robot.ip)
       sharo.useROS(json_robot.ip)
     },
@@ -351,6 +490,7 @@ var RizeMenu = {
       AppVue.dialog_start = false
       this.dialog_load = true
     },
+
 
 
     onLoadProject: function () {
@@ -371,6 +511,18 @@ var RizeMenu = {
         console.log("Loading project " + AppVue.project.name)
 
         let config = rizeObject.onLoadProject(project_name)
+        console.log(config)
+
+        AppVue.project.version = config.version
+        AppVue.global_versions = config.versions
+
+        this.dialog_version_load = false;
+        console.log(AppVue.project.version);
+
+
+        let full_path = rizeObject.directoryProjects + "/" + AppVue.project.name + "/versions/" + config.version + "/config.json"
+        config = rizeObject.onReadJSONFile(full_path);
+
 
         AppVue.project.words = config.words
         AppVue.project.sentences = config.sentences
@@ -383,8 +535,8 @@ var RizeMenu = {
         AppVue.rizeGoals = config.rizeGoals
         AppVue.rizeModules = config.rizeModules
         AppVue.project.volume = config.volume
-        //AppVue.project.idle_behavior_name = config.idleBehaviior
-        //AppVue.rizePatterns = config.rizePatterns
+
+
 
         AppVue.model = "Home"
         this.dialog_load = false
@@ -394,8 +546,8 @@ var RizeMenu = {
         this.robot_ip = AppVue.project.robot_ip
 
 
-        AppVue.robot_ip =  config.robot_ip
-        AppVue.robot_name =  config.robot_name
+        AppVue.robot_ip = config.robot_ip
+        AppVue.robot_name = config.robot_name
         this.robot_name = AppVue.project.robot_name
 
       }
@@ -411,7 +563,7 @@ var RizeMenu = {
   <v-tooltip bottom>
     <template v-slot:activator="{ on }">
       <v-btn class="mx-4" text v-on:click="onNewProjectDialog" v-on="on">
-        <v-icon>mdi-file-plus</v-icon>
+        <v-icon>mdi-plus</v-icon>
       </v-btn>
     </template>
     <span>New project</span>
@@ -424,7 +576,7 @@ var RizeMenu = {
         <v-icon>mdi-folder-open</v-icon>
       </v-btn>
     </template>
-    <span>Load</span>
+    <span>Load Project</span>
   </v-tooltip>
 
   <v-tooltip bottom>
@@ -433,12 +585,10 @@ var RizeMenu = {
         <v-icon>mdi-content-save</v-icon>
       </v-btn>
     </template>
-    <span>Save</span>
+    <span>Save all</span>
   </v-tooltip>
 
-
-</v-tooltip>
-
+  
   <v-tooltip bottom>
   <template v-slot:activator="{ on }">
     <v-btn class="mx-4" text v-on:click="onOpenIP" v-on="on">
@@ -446,7 +596,35 @@ var RizeMenu = {
     </v-btn>
   </template>
   <span>Change IP address</span>
+  </v-tooltip>
+
+    <v-divider
+    inset
+    vertical
+  ></v-divider>
+
+  <v-tooltip bottom>
+  <template v-slot:activator="{ on }">
+    <v-btn class="mx-4" text v-on:click="onCreateNewBranch"  v-on="on">
+    <v-icon>mdi-source-branch-plus</v-icon>
+    </v-btn>
+  </template>
+  <span>New version</span>
+  </v-tooltip>
+
+  
+
+  <v-tooltip bottom>
+  <template v-slot:activator="{ on }">
+    <v-btn class="mx-4" text v-on:click="onCreateLoadBranch"  v-on="on">
+    <v-icon>mdi-source-branch</v-icon>
+    </v-btn>
+  </template>
+  <span>Go to version</span>
+  </v-tooltip>
+
 </v-tooltip>
+
 
 
   <v-spacer></v-spacer>
@@ -466,12 +644,12 @@ var RizeMenu = {
   <v-spacer></v-spacer>
 
 
-
-
-    <v-btn class="mx-4" text>
-      <v-icon></v-icon>
+    <v-btn class="mx-4" text >
+    <v-icon></v-icon>
     </v-btn>
-
+    <v-btn class="mx-4" text >
+    <v-icon></v-icon>
+    </v-btn>
 
 
   <v-tooltip bottom>
@@ -504,6 +682,23 @@ var RizeMenu = {
   </template>
   <span>Text to speech</span>
   </v-tooltip>
+
+
+    <v-divider
+  inset
+  vertical
+  ></v-divider>
+
+
+  <v-tooltip bottom>
+  <template v-slot:activator="{ on }">
+    <v-btn class="mx-4" text v-on:click="onConsole"  v-on="on">
+    <v-icon>mdi-console</v-icon>
+    </v-btn>
+  </template>
+  <span>Label experiment</span>
+  </v-tooltip>
+
 
 
 
@@ -700,6 +895,123 @@ var RizeMenu = {
         <v-btn color="pink darken-4" outlined v-on:click="onCreateNewProject">Create</v-btn>
 
       </v-card-actions>
+    </v-card>
+  </v-dialog>
+
+
+  <v-dialog v-model="dialog_version" persistent width="500px">
+
+  <v-card>
+    <v-toolbar flat dense dark color="grey darken-3">
+     <div v-if="program_started===true">
+      <v-btn icon dark @click.native="dialog_version = false">
+        <v-icon>mdi-close</v-icon>
+      </v-btn>
+      </div>
+      <v-toolbar-title>New version</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-icon>mdi-source-branch-plus</v-icon>
+
+      <v-toolbar-items></v-toolbar-items>
+    </v-toolbar>
+
+    <v-container fill-height fluid>
+
+    <v-flex xs12 sm12 d-flex></v-flex>
+    <div class="headline"><span style="font-size: 18px"> Set version name: </span></div>
+    </v-flex>
+
+    <v-flex xs12 sm12 d-flex></v-flex>
+    <v-text-field single-line filled v-model="new_version" label=""
+    hint="Please input alphabet characters, do not start with a number, do not use spaces (use _ instead) of spaces">
+    </v-text-field>
+    </v-flex>
+
+  
+
+    </v-container>
+
+    <v-card-actions>
+      <div v-if="program_started===false">
+      <v-btn icon v-on:click="onReturnLoad">
+        <v-icon>mdi-arrow-left</v-icon>
+      </v-btn>
+      </div>
+      <v-spacer></v-spacer>
+      <v-btn color="grey darken-3" outlined v-on:click="onCreateNewVersion">Create</v-btn>
+
+    </v-card-actions>
+  </v-card>
+</v-dialog>
+
+
+<v-dialog v-model="dialog_version_load" persistent max-width="500px">
+    </v-btn>
+    <v-card>
+      <v-toolbar flat dense dark color="grey darken-3">
+      <div v-if="program_started===true">
+        <v-btn icon dark @click.native="dialog_version_load = false">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </div>
+        <v-toolbar-title>Load Version</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-icon>mdi-source-branch</v-icon>
+        <v-toolbar-items></v-toolbar-items>
+      </v-toolbar>
+      <v-container fluid grid-list-xl>
+        <v-layout wrap align-center>
+          <v-flex xs12 sm12 d-flex></v-flex>
+          
+
+          
+  <v-card flat>
+
+
+    <v-container fill-height fluid>
+
+
+    <v-data-table
+    :headers="headers_version"
+    :items="version_values"
+    :items-per-page="5"
+    class="elevation-1"
+  ></v-data-table>
+  
+
+    </v-container>
+
+  
+  </v-card>
+
+
+          <div class="headline"><span style="font-size: 18px"> &nbsp; Select version: </span></div>
+          </v-flex>
+          <v-flex xs12 sm12 d-flex>
+            <v-select :items="items_version"  v-model="version_selected" outlined>
+            </v-select>
+          </v-flex>
+        </v-layout>
+
+        <v-spacer></v-spacer>
+
+        <v-layout wrap align-center>
+          &nbsp;
+          &nbsp;
+          <div v-if="program_started===false">
+          <v-btn icon v-on:click="onReturnNew">
+            <v-icon>mdi-arrow-left</v-icon>
+          </v-btn>
+          </div>
+          <v-spacer></v-spacer>
+          <v-btn outlined color="grey darken-3" v-on:click="onLoadVersion" dark>LOAD
+          </v-btn>
+          &nbsp;
+          &nbsp;
+        </v-layout>
+
+      </v-container>
+
     </v-card>
   </v-dialog>
 

@@ -64,8 +64,11 @@ try:
     move = nep_aldebaran.BodyMove(robot_ip, robot_port, type_robot, path_animations)
     robot_volume = nep_aldebaran.Volume(robot_ip, robot_port)
     leds = nep_aldebaran.Leds(robot_ip, robot_port)
-    audio = nep_aldebaran.Audio(robot_ip, robot_port)
-    track = nep_aldebaran.Tracking(robot_ip, robot_port)
+    if robot_ip != "127.0.0.1":
+        audio = nep_aldebaran.Audio(robot_ip, robot_port)
+        track = nep_aldebaran.Tracking(robot_ip, robot_port)
+    else:
+        print("Audio and tracking not avalianle for simulation")
 
 
     if type_robot == "pepper":
@@ -93,27 +96,48 @@ except Exception as e:
 
 if connected:
     try:
-        # Define actions 
-        robot_actions = {
-                        'say':say.onRun,
-                        'close_hand':move.onCloseHand,
-                        'open_hand':move.onOpenHand,
-                        'language':say.onSetLanguage,
-                        'animation':move.onRunAnimation,
-                        'posture':move.onPosture,
-                        'walk':move.onWalk,
-                        'turn':move.onTurn,
-                        'wait':wait,
-                        'mode':move.onRunMode,
-                        'volume':robot_volume.onSet,
-                        'leds':leds.onSetColor,
-                        'sound':audio.onPlaySound,
-                        'breathing':move.onBreathe,
-                        'track_people_with':track.onTrackPeople,
-                        'track_redball_with':track.onTrackRedBall,
-                        'track_sound_with':track.onTrackSound,
-                        'walk_toward':track.onWalkTowards,
-                        }
+
+        # Avaliable for simuation
+        if robot_ip != "127.0.0.1":
+            # Define actions 
+            robot_actions = {
+                            'say':say.onRun,
+                            'close_hand':move.onCloseHand,
+                            'open_hand':move.onOpenHand,
+                            'language':say.onSetLanguage,
+                            'animation':move.onRunAnimation,
+                            'posture':move.onPosture,
+                            'walk':move.onWalk,
+                            'turn':move.onTurn,
+                            'wait':wait,
+                            'mode':move.onRunMode,
+                            'volume':robot_volume.onSet,
+                            'leds':leds.onSetColor,
+                            'sound':audio.onPlaySound,
+                            'breathing':move.onBreathe,
+                            'track_people_with':track.onTrackPeople,
+                            'track_redball_with':track.onTrackRedBall,
+                            'track_sound_with':track.onTrackSound,
+                            'walk_toward':track.onWalkTowards,
+                            }
+        else:
+
+            # Define actions 
+            robot_actions = {
+                            'say':say.onRun,
+                            'close_hand':move.onCloseHand,
+                            'open_hand':move.onOpenHand,
+                            'language':say.onSetLanguage,
+                            'animation':move.onRunAnimation,
+                            'posture':move.onPosture,
+                            'walk':move.onWalk,
+                            'turn':move.onTurn,
+                            'wait':wait,
+                            'mode':move.onRunMode,
+                            'volume':robot_volume.onSet,
+                            'leds':leds.onSetColor,
+                            'breathing':move.onBreathe,
+                            }
         
         if type_robot == "pepper":
             robot_actions['show_video'] = tablet.showVideo

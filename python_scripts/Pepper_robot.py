@@ -15,7 +15,7 @@ import time
 import sys, os 
 import nep_aldebaran   # NEP-RIZE library of NAO and Pepper robots
 
-robot_port = "59115"
+robot_port = "9559"
 robot_name = "Pepper"
 robot_ip = '127.0.0.1'
 middleware = "ZMQ"

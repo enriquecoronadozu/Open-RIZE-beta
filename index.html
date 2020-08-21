@@ -653,7 +653,23 @@
       sharo_active_action["state"] = state
     }
     console.log("Action: " + id_ + " return " + state)
+
+    try {
+
+      // rosbridge
+      if (using_ros === true) {
+        var str = new ROSLIB.Message({
+          data: JSON.stringify(msg)
+        });
+        publisher_actions.publish(str)
+      }
+
+    } catch (error) {
+
+    }
+
   }
+
   NepNode.new_sub("action_state", "json", callback_action);
   var sharo_pub = NepNode.new_pub("/blackboard", "json");
 
@@ -810,6 +826,20 @@
           interaction_state = "reaction"
           console.log(" --- STATE: " + " reaction " + " --- ")
           console.log(" * Reaction active: " + reactions[0]["name"] + " * ")
+
+          try {
+
+            // rosbridge
+            if (using_ros === true) {
+              var str = new ROSLIB.Message({
+                data: JSON.stringify(reactions[0])
+              });
+              publisher_behaviors.publish(str)
+            }
+
+          } catch (error) {
+
+          }
         }
       }
     }
@@ -1116,6 +1146,62 @@
       },
     }
   });
+
+
+
+  var roslib = "";
+  var using_ros = false;
+  var publisher_rize = "";
+  var publisher_actions = "";
+  var publisher_behaviors = "";
+
+  var start_ros_pubs = function (ros_ip) {
+
+
+    roslib = new ROSLIB.Ros({
+      url: 'ws://' + ros_ip + ':9090'
+    });
+
+    roslib.on('connection', function () {
+      console.log('Connected to websocket server.');
+      using_ros = true;
+    });
+
+    roslib.on('error', function (error) {
+      console.log('Error connecting to websocket server: ', error);
+      using_ros = false;
+    });
+
+    roslib.on('close', function () {
+      console.log('Connection to websocket server closed.');
+      using_ros = false;
+    });
+
+    publisher_rize = new ROSLIB.Topic({
+      ros: roslib,
+      name: '/rize_interface',
+      messageType: 'std_msgs/String'
+    });
+
+    publisher_actions = new ROSLIB.Topic({
+      ros: roslib,
+      name: '/rize_actions',
+      messageType: 'std_msgs/String'
+    });
+
+    publisher_behaviors = new ROSLIB.Topic({
+      ros: roslib,
+      name: '/rize_behaviors',
+      messageType: 'std_msgs/String'
+    });
+
+    var str = new ROSLIB.Message({
+          data: JSON.stringify({"action":"rosbrige_started"})
+        });
+    publisher_rize.publish(str);
+
+  }
+
 
 </script>
 

@@ -255,7 +255,7 @@ class BTManager {
             }
 
         });
-        
+
         return active.sort(function (a, b) { return b.utility - a.utility });
     }
 
@@ -456,6 +456,8 @@ class BTManager {
 
     runSelector(node) {
 
+        console.log("run selector")
+        console.log(node["children"])
         var children = node["children"]
 
         if (Array.isArray(children)) { // If is list
@@ -463,6 +465,7 @@ class BTManager {
             for (let i = 0; i < children.length; i++) {
                 var child = children[i];
                 var response = this.tick(child)
+                console.log(response)
 
                 if (response === "success") {
                     this.setNodeSuccess(node)
@@ -541,6 +544,7 @@ class BTManager {
             node["state"] = "running"
             this.setNodeRunning(node)
         }
+
         return "running"
     }
 

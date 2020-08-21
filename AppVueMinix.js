@@ -44,7 +44,7 @@ Vue.mixin({
       project: {
         name: "Pepper",               // Current project name
         selected_project: 'default',
-        robot_ip:"127.0.0.1",
+        robot_ip: "127.0.0.1",
         selected_module: '',
         chips_robots: '',
         volume: 50,
@@ -52,10 +52,10 @@ Vue.mixin({
         words: [{ "name": "hello" }],
         sentences: [{ "name": "hello" }],
         idle_behavior_name: "",
-        version:"Initial",
-        versions:{"Initial":"no_saved"}
+        version: "Initial",
+        versions: { "Initial": "no_saved" }
       },
-      global_versions:{
+      global_versions: {
 
       },
       current_type: "",
@@ -116,13 +116,13 @@ Vue.mixin({
 
 
         var path_project = rizeObject.directoryProjects + "/" + this.project.name
-        var path_folder = path_project + "/versions/" + AppVue.project.version +  "/"+ AppVue.current_type + "/versions"
+        var path_folder = path_project + "/versions/" + AppVue.project.version + "/" + AppVue.current_type + "/versions"
 
         rizeObject.onCreateFolder(path_folder)
         var path_block_folder = path_folder + "/" + AppVue.block_name
 
         rizeObject.onCreateFolder(path_block_folder)
-        var path_block_folder_date = path_folder + "/" + AppVue.block_name 
+        var path_block_folder_date = path_folder + "/" + AppVue.block_name
         console.log(path_block_folder_date)
         rizeObject.onCreateFolder(path_block_folder_date)
 
@@ -157,8 +157,8 @@ Vue.mixin({
           date = "0" + date;
         }
 
-        var path_files = path_block_folder_date +  "/"  +  year  +  "_"  + month  + "_"  +  date + "_"  + hr + "hr" + min + "min" + sec + "sec" + "___" + type_saved + ".xml"
-        
+        var path_files = path_block_folder_date + "/" + year + "_" + month + "_" + date + "_" + hr + "hr" + min + "min" + sec + "sec" + "___" + type_saved + ".xml"
+
         rizeObject.onSaveFileSync(path_files, xml_module)
         this.path_block_folder_date = path_block_folder_date
 
@@ -188,6 +188,19 @@ Vue.mixin({
         AppVue.SaveProject()
         AppVue.onLoadJSFunctions()
         AppVue.onBuildBTProgram()
+
+        try {
+
+          // rosbridge
+          if (using_ros === true) {
+            var str = new ROSLIB.Message({
+              data: JSON.stringify({ "action": "save_block", "input": AppVue.block_name })
+            });
+            publisher_rize.publish(str)
+          }
+        } catch (error) {
+
+        }
       }
       catch{
         AppVue.main_dialog = true
@@ -287,7 +300,7 @@ Vue.mixin({
       this.onSaveVersion("see_history")
 
       var path_project = rizeObject.directoryProjects + "/" + this.project.name
-      var path_folder = path_project + "/versions/" + AppVue.project.version + "/"  + AppVue.current_type + "/versions"
+      var path_folder = path_project + "/versions/" + AppVue.project.version + "/" + AppVue.current_type + "/versions"
       var path_block_folder = path_folder + "/" + AppVue.block_name
 
       var days = rizeObject.onGetListFiles(path_block_folder)
@@ -301,7 +314,7 @@ Vue.mixin({
     onSetVersion() {
 
       var path_project = rizeObject.directoryProjects + "/" + this.project.name
-      var path_folder = path_project + "/versions/" + AppVue.project.version + "/"  + AppVue.current_type + "/versions"
+      var path_folder = path_project + "/versions/" + AppVue.project.version + "/" + AppVue.current_type + "/versions"
       this.path_block_folder_day = path_folder + "/" + AppVue.block_name
       var lista = rizeObject.onGetListFiles(this.path_block_folder_day)
       console.log(lista)
@@ -475,15 +488,15 @@ Vue.mixin({
       var path_folder = path_project + "/" + AppVue.current_type + "/versions"
       this.path_block_folder_version = path_folder + "/" + AppVue.block_name + "/" + this.project.version
 
-      var path_list = rizeObject.getPathProjects() + "/" + AppVue.project.name + "/" + AppVue.current_type  + "/versions/" +  AppVue.block_name
+      var path_list = rizeObject.getPathProjects() + "/" + AppVue.project.name + "/" + AppVue.current_type + "/versions/" + AppVue.block_name
       console.log(path_list)
 
-      var lista = rizeObject.onGetListFiles(rizeObject.getPathProjects() + "/" +  AppVue.project.name + "/versions/" + this.project.version + "/" + AppVue.current_type  + "/versions/" +  AppVue.block_name  )
+      var lista = rizeObject.onGetListFiles(rizeObject.getPathProjects() + "/" + AppVue.project.name + "/versions/" + this.project.version + "/" + AppVue.current_type + "/versions/" + AppVue.block_name)
 
       console.log(lista)
       //var xml_path = rizeObject.getPathProjects() + "/" + AppVue.project.name + "/" + AppVue.current_type + "/xml/" + AppVue.block_name + ".xml"
 
-      var xml_path = rizeObject.getPathProjects() + "/" + AppVue.project.name + "/versions/" + this.project.version + "/" + AppVue.current_type  + "/versions/"+  AppVue.block_name  +  "/" + lista[lista.length-1]
+      var xml_path = rizeObject.getPathProjects() + "/" + AppVue.project.name + "/versions/" + this.project.version + "/" + AppVue.current_type + "/versions/" + AppVue.block_name + "/" + lista[lista.length - 1]
       console.log(xml_path)
 
       console.log(xml_path)
@@ -559,7 +572,7 @@ Vue.mixin({
         words: [{ "name": "hello" }],
         sentences: [{ "name": "hello" }],
         version: "Initial",
-        versions: {"Initial":"NoSaved"},
+        versions: { "Initial": "NoSaved" },
       },
         this.rizeReactions = []
       this.rizeGoals = []
@@ -641,7 +654,7 @@ Vue.mixin({
           "version": AppVue.project.version,
           "rizePatterns": AppVue.rizePatterns,
           "idleBehaviior": AppVue.project.idle_behavior_name,
-          "robot_ip":AppVue.project.robot_ip
+          "robot_ip": AppVue.project.robot_ip
         }
 
         var config = {
@@ -651,8 +664,8 @@ Vue.mixin({
 
         console.log(config)
         rizeObject.onSaveJSON(rizeObject.getPathProjects() + "/" + project_name + "/config.json", config)
-        rizeObject.onCreateFolder(rizeObject.getPathProjects() + "/" + project_name + "/versions/" + AppVue.project.version )
-        rizeObject.onSaveJSON(rizeObject.getPathProjects() + "/" + project_name + "/versions/" + AppVue.project.version  +  "/config.json", config_version)
+        rizeObject.onCreateFolder(rizeObject.getPathProjects() + "/" + project_name + "/versions/" + AppVue.project.version)
+        rizeObject.onSaveJSON(rizeObject.getPathProjects() + "/" + project_name + "/versions/" + AppVue.project.version + "/config.json", config_version)
 
       }
     },

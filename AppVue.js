@@ -80,6 +80,19 @@ var AppVue = new Vue({
       }
 
       this.dialog_primitives = false
+
+      try {
+        // rosbridge
+        if (using_ros === true) {
+          var str = new ROSLIB.Message({
+            data: JSON.stringify({ "action": "edit_primitive", "input": this.current_primitive.primitive})
+          });
+          publisher_rize.publish(str)
+        }
+      } catch (error) {
+
+      }
+
     },
 
     onClose: function () {
@@ -133,10 +146,10 @@ var AppVue = new Vue({
                     AppVue.items_dropdown = this.current_primitive.input_options
                   }
                 }
-               // console.log(this.current_primitive)
+                // console.log(this.current_primitive)
 
               } catch (error) {
-               // console.log("Error here")
+                // console.log("Error here")
                 this.current_primitive = { "primitive": "nothing", "options": {} }
               }
             }
@@ -150,7 +163,7 @@ var AppVue = new Vue({
     onLoadJSFunctions: function () {
 
       // Convert main.js to BT JSON specifications
-      jquery.getScript(rizeObject.getPathProjects() + "/" + project_name + "/versions/" +  this.project.version + "/code.js", function (data, textStatus, jqxhr) {
+      jquery.getScript(rizeObject.getPathProjects() + "/" + project_name + "/versions/" + this.project.version + "/code.js", function (data, textStatus, jqxhr) {
         //console.log("Saving goals as BT ...")
         list_goals = [];
         names_goals = [];
@@ -224,6 +237,8 @@ var AppVue = new Vue({
       this.onLoadJSFunctions()
 
 
+
+
     },
 
     onBuildBTProgram: function () {
@@ -240,7 +255,7 @@ var AppVue = new Vue({
       var l_reactions = names_reactions
       var code_reactions = list_reactions
 
-      var path = path_projects + "/" + project_name + "/versions/" + this.project.version +  "/goal/json"
+      var path = path_projects + "/" + project_name + "/versions/" + this.project.version + "/goal/json"
       for (let index = 0; index < names_goals.length; index++) {
         const element = names_goals[index];
         var path_ = path + "/" + element + ".json"

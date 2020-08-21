@@ -65,7 +65,7 @@ var BlocksFoot = {
       AppVue.onLoadJSFunctions()
       AppVue.onBuildBTProgram()
 
-      var path =  rizeObject.directoryProjects  + "/" + project_name + "/versions/" +  AppVue.project.version + "/"+ AppVue.current_type + "/json/" + AppVue.current_type + "_" + AppVue.block_name + ".json"
+      var path = rizeObject.directoryProjects + "/" + project_name + "/versions/" + AppVue.project.version + "/" + AppVue.current_type + "/json/" + AppVue.current_type + "_" + AppVue.block_name + ".json"
       console.log(path)
 
       var module = rizeObject.onReadJSONFile(path)
@@ -90,7 +90,7 @@ var BlocksFoot = {
         AppVue.onLoadJSFunctions()
         AppVue.onBuildBTProgram()
 
-        var path = rizeObject.directoryProjects  + "/" + project_name + "/versions/" +  AppVue.project.version + "/"+ AppVue.current_type + "/json/" + AppVue.current_type + "_" + block_name + ".json"
+        var path = rizeObject.directoryProjects + "/" + project_name + "/versions/" + AppVue.project.version + "/" + AppVue.current_type + "/json/" + AppVue.current_type + "_" + block_name + ".json"
         console.log(path)
 
         var module = rizeObject.onReadJSONFile(path)
@@ -98,6 +98,21 @@ var BlocksFoot = {
         btRun.current_module = module["bt"]
 
         runModule(module["bt"], AppVue.current_type)
+
+        try {
+
+          // rosbridge
+          if (using_ros === true) {
+            var str = new ROSLIB.Message({
+              data: JSON.stringify({ "action": "debug_module", "input": block_name })
+            });
+            publisher_rize.publish(str)
+          }
+
+        } catch (error) {
+
+        }
+
 
       } catch (error) {
 

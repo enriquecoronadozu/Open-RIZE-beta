@@ -20,7 +20,21 @@ var RizeFoot = {
       this.playcolor = "lime lighten-1"
       console.log("onPlay")
       runProgram()
+
+      try {
+
+        // rosbridge
+        if (using_ros === true) {
+          var str = new ROSLIB.Message({
+            data: JSON.stringify({ "action": "play_all" })
+          });
+          publisher_rize.publish(str)
+        }
+      } catch (error) {
+
+      }
     },
+
     onPause: function () {
       console.log("onPause")
     },
@@ -32,6 +46,14 @@ var RizeFoot = {
       stopProgram()
       console.log("onStop")
       program_running = false
+
+      // rosbridge
+      if (using_ros === true) {
+        var str = new ROSLIB.Message({
+          data: JSON.stringify({ "action": "stop_all" })
+        });
+        publisher_rize.publish(str)
+      }
     },
 
     onRunAction: function (action) {

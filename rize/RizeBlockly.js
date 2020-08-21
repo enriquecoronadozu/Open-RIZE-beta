@@ -132,6 +132,7 @@ var edit_module = function () {
   AppVue.items_modules = list_modules;
   console.log(AppVue.items_modules)
   AppVue.dialog_modules = true;
+
 }
 
 
@@ -213,7 +214,7 @@ var edit_primitive = function () {
   AppVue.dialog_primitives = true;
 }
 
-// Set of functions used for manage Google Blockly
+//  of functions used for manage Google Blockly
 var rizeBlockly = {
 
   // ----------- Set current block_name when created in WOKKSPACE -------------------

@@ -6,6 +6,7 @@ var RizeMenu = {
       disabled: false,
       disabled_ros: false,
       robot_ip: "127.0.0.1",
+      ros_ip: "127.0.0.1",
       robot_port: 9559,
       someChildProperty: true,
       action_number: 1,
@@ -113,6 +114,19 @@ var RizeMenu = {
     onRunAction: function (action) {
       response = btManager.tick(action) // IMPORTANT: require the definition of bt for action execution
       console.log(action)
+
+      try {
+
+        // rosbridge
+        if (using_ros === true) {
+          var str = new ROSLIB.Message({
+            data: JSON.stringify({ "action": "debugg", "input": action })
+          });
+          publisher_rize.publish(str)
+        }
+      } catch (error) {
+
+      }
     },
 
     editItem(item) {
@@ -257,6 +271,19 @@ var RizeMenu = {
         AppVue.onLoadJSFunctions()
         AppVue.onBuildBTProgram()
       }
+
+      try {
+        // rosbridge
+        if (using_ros === true) {
+          var str = new ROSLIB.Message({
+            data: JSON.stringify({ "action": "save_all" })
+          });
+          publisher_rize.publish(str)
+        }
+      } catch (error) {
+
+      }
+
 
     },
 
@@ -461,7 +488,7 @@ var RizeMenu = {
       AppVue.rizeGoals = config.rizeGoals
       AppVue.rizeModules = config.rizeModules
       AppVue.project.volume = config.volume
-      
+
 
 
       AppVue.model = "Home"
@@ -481,8 +508,9 @@ var RizeMenu = {
 
 
     onStartROS: function () {
-      console.log("Start rosbridge in:" + json_robot.ip)
-      sharo.useROS(json_robot.ip)
+      console.log("Start rosbridge in: " + this.ros_ip)
+      sharo.useROS(this.ros_ip)
+      start_ros_pubs(this.ros_ip)
     },
 
     LoadStart: function () {
@@ -1105,9 +1133,16 @@ var RizeMenu = {
         <div v-if="disabled_ros === true">
 
         <card>
-        
-        <v-btn outlined color="pink darken-4" v-on:click="onStartROS" dark> Start ROSbridge
-        </v-btn>
+        <div class="headline"><span style="font-size: 20px"> Set rosbridge IP </span></div>
+        <v-text-field v-model="ros_ip" required></v-text-field>
+
+       
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn outlined color="pink darken-4" v-on:click="onStartROS" dark> Start ROSbridge
+          </v-btn>
+          <v-spacer></v-spacer>
+        </v-card-actions>
 
         </card>
 
@@ -1139,8 +1174,9 @@ var RizeMenu = {
 
       <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn outlined color="pink darken-4" v-on:click="onChangeIP" dark> Change
+      <v-btn outlined color="pink darken-4" v-on:click="onChangeIP" dark> Save configuration
       </v-btn>
+      <v-spacer></v-spacer>
     </v-card-actions>
 
     </v-card>

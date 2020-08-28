@@ -127,6 +127,22 @@ Vue.mixin({
         rizeObject.onCreateFolder(path_block_folder_date)
 
         var xml_module = Blockly.Xml.workspaceToDom(WORKSPACE);
+        let source_code = "";
+        let source = Blockly.Python.workspaceToCode(WORKSPACE);
+        var json_list = source.split("#...#");
+    
+
+        json_list.forEach(function (element) {
+          if (element == "") {
+            console.log("No elements")
+          }
+          else {
+            json_element = JSON.parse(element)
+            string_data = JSON.stringify(json_element["data"], null, 4)
+            source_code =  string_data
+          }
+        });
+
         // Transform a xml text in a more redeable xml text
         xml_module = Blockly.Xml.domToPrettyText(xml_module);
 
@@ -160,7 +176,27 @@ Vue.mixin({
         var path_files = path_block_folder_date + "/" + year + "_" + month + "_" + date + "_" + hr + "hr" + min + "min" + sec + "sec" + "___" + type_saved + ".xml"
 
         rizeObject.onSaveFileSync(path_files, xml_module)
+
         this.path_block_folder_date = path_block_folder_date
+
+
+        
+        var path_folder = path_project + "/versions/" + AppVue.project.version + "/" + AppVue.current_type + "/bt"
+        rizeObject.onCreateFolder(path_folder)
+        var path_block_folder = path_folder + "/" + AppVue.block_name
+        rizeObject.onCreateFolder(path_block_folder)
+        var path_block_folder_date = path_folder + "/" + AppVue.block_name
+        console.log(path_block_folder_date)
+        rizeObject.onCreateFolder(path_block_folder_date)
+
+        var path_files = path_block_folder_date + "/" + year + "_" + month + "_" + date + "_" + hr + "hr" + min + "min" + sec + "sec" + "___" + type_saved + ".json"
+        source_code = rizeBlockly.replaceAll(source_code, '"**', "")
+        source_code = rizeBlockly.replaceAll(source_code, '**"', "")
+        source_code = rizeBlockly.replaceAll(source_code, '"  **', "")
+        console.log(source_code)
+        rizeObject.onSaveFileSync(path_files, source_code)
+
+
 
       }
     },
@@ -304,6 +340,8 @@ Vue.mixin({
       var path_block_folder = path_folder + "/" + AppVue.block_name
 
       var days = rizeObject.onGetListFiles(path_block_folder)
+  
+
       console.log(days)
       this.items_days = days
       this.onSetVersion()

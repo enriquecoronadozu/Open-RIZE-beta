@@ -869,6 +869,7 @@
         }
         else {
           interaction_state = "idle"
+          send_idle();
           console.log(" --- STATE: " + " idle " + " --- ")
         }
 
@@ -909,11 +910,13 @@
             current_goal = {}
             interaction_state = "idle"
             console.log(" --- STATE: " + " idle " + " --- ")
+            send_idle();
           }
           else {
             current_goal = {}
             interaction_state = "idle"
             console.log(" --- STATE: " + " idle " + " --- ")
+            send_idle();
           }
 
         }
@@ -921,6 +924,7 @@
           current_goal = {}
           interaction_state = "idle"
           console.log(" --- STATE: " + " idle " + " --- ")
+          send_idle();
         }
       }
     }
@@ -954,6 +958,7 @@
             current_goal = {}
             interaction_state = "idle"
             console.log(" --- STATE: " + " idle " + " --- ")
+            send_idle();
           }
         }
       }
@@ -1196,10 +1201,26 @@
     });
 
     var str = new ROSLIB.Message({
-          data: JSON.stringify({"action":"rosbrige_started"})
-        });
+      data: JSON.stringify({ "action": "rosbrige_started" })
+    });
     publisher_rize.publish(str);
 
+  }
+
+  var send_idle = function (){
+    try {
+
+      // rosbridge
+      if (using_ros === true) {
+        var str = new ROSLIB.Message({
+          data: JSON.stringify({ "action": "idle" })
+        });
+        publisher_rize.publish(str);
+      }
+
+    } catch (error) {
+
+    }
   }
 
 

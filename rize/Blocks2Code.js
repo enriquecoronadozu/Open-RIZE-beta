@@ -2,6 +2,7 @@
 
 var rizeBlocks = {
 
+
   do_action_robot: function (value_input, value_robots) {
     let json_action = bt_blocks.action(value_input, value_robots)
     return JSON.stringify(json_action) + "#..#"
@@ -63,35 +64,64 @@ var rizeBlocks = {
 
   build_conditions(value, keep = true) {
     try {
-
+      console.log(value)
       var conditions = JSON.parse(value);
-      var start_condition = "";
-      var list_conditions = [];
-      if (Array.isArray(conditions)) {
-        conditions.forEach(element => {
-          if (keep) {
-            element["options"] = { "remember": 3, "keep": false };
-            var cond = bt_blocks.condition(element);
-            list_conditions.push(cond);
-          }
-          else {
-            var cond = bt_blocks.condition(element);
-            list_conditions.push(cond);
-          }
-        });
-        start_condition = bt_blocks.sequence(list_conditions);
+      console.log(conditions)
+
+      if ("node" in conditions) {
+        var childrens = conditions.children;
+        console.log(childrens)
+        var new_childrens = [];
+        if (Array.isArray(childrens)) {
+          childrens.forEach(element => {
+            if (keep) {
+              element["options"] = { "remember": 3, "keep": false };
+              var cond = bt_blocks.condition(element);
+              new_childrens.push(cond);
+            }
+            else {
+              var cond = bt_blocks.condition(element);
+              new_childrens.push(cond);
+            }
+          });
+        }
+
+        conditions.children = new_childrens;
+        return conditions;
+
       }
       else {
-        if (keep) {
-          conditions["options"] = { "remember": 3, "keep": false };
-          start_condition = bt_blocks.condition(conditions);
+
+        var start_condition = "";
+        var list_conditions = [];
+
+        if (Array.isArray(conditions)) {
+          conditions.forEach(element => {
+            if (keep) {
+              element["options"] = { "remember": 3, "keep": false };
+              var cond = bt_blocks.condition(element);
+              list_conditions.push(cond);
+            }
+            else {
+              var cond = bt_blocks.condition(element);
+              list_conditions.push(cond);
+            }
+          });
+          start_condition = bt_blocks.sequence(list_conditions);
         }
         else {
-          start_condition = bt_blocks.condition(conditions);
+          if (keep) {
+            conditions["options"] = { "remember": 3, "keep": false };
+            start_condition = bt_blocks.condition(conditions);
+          }
+          else {
+            start_condition = bt_blocks.condition(conditions);
+          }
         }
-      }
 
-      return start_condition;
+        return start_condition;
+
+      }
 
     } catch (error) {
 
@@ -112,6 +142,8 @@ var rizeBlocks = {
 
   reaction: function (text_name_reaction, conditions, statements_behavior_code, text_utility) {
     text_name_reaction = module_name
+    console.log(conditions)
+    console.log(JSON.parse(conditions))
     var start_condition = this.build_conditions(conditions, false);
     let lista = rizeBlocks.codeToList(statements_behavior_code);
     let bt = bt_blocks.sequence(lista)

@@ -247,9 +247,12 @@ class BTManager {
 
     checkActiveBehaviors(lista) {
 
+        
         let active = []
         lista.forEach(element => {
-            let result = this.tick(element["activate"])
+            var chech_condition =  JSON.parse(JSON.stringify(element["activate"]));
+            chech_condition.state = "idle";
+            let result = this.tick(chech_condition)
             if (result == "success") {
                 active.push(element)
             }

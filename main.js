@@ -110,3 +110,28 @@ function onStart() {
 }
 
 onStart()
+
+
+ipcMain.on('synchronous-message', (event, arg) => {
+  if(developer_mode)
+  {
+    master_pid = arg
+    console.log(arg)
+    mainWindow.webContents.closeDevTools()
+    // Synchronous event emmision
+    event.returnValue = 'sync pong'
+    developer_mode = false
+
+  }
+  else{
+
+    master_pid = arg
+    console.log(arg)
+    mainWindow.webContents.openDevTools()
+    // Synchronous event emmision
+    event.returnValue = 'sync pong'
+    developer_mode = true
+
+  }
+
+})

@@ -20,18 +20,36 @@ robot = ActionEngine(robot_name, "listen")
 
 import pyttsx
 
+def speech2text(x,y):
+    time.sleep(1)
+
+def walk(x,y):
+    time.sleep(1)
+
 def wait(x,y):
     time.sleep(1)
 
-def speech2text(input_,parameters):
-    engine = pyttsx.init()
-    engine.say(input_)
-    engine.runAndWait()
+def animation(x,y):
+    time.sleep(1)
+
+def track(x,y):
+    time.sleep(1)
+
+def turn(x,y):
+    time.sleep(1)
+
 
 
 # Define actions 
 robot_actions = {
                 'say':speech2text,
+                'walk':walk,
+                "wait":wait,
+                "animation":animation,
+                "track_redball_with":track,
+                "turn":turn,
+                
+                
                 }
 
 # Set robot actions

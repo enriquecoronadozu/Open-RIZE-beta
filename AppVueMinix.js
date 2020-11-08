@@ -130,7 +130,7 @@ Vue.mixin({
         let source_code = "";
         let source = Blockly.Python.workspaceToCode(WORKSPACE);
         var json_list = source.split("#...#");
-    
+
 
         json_list.forEach(function (element) {
           if (element == "") {
@@ -139,7 +139,7 @@ Vue.mixin({
           else {
             json_element = JSON.parse(element)
             string_data = JSON.stringify(json_element["data"], null, 4)
-            source_code =  string_data
+            source_code = string_data
           }
         });
 
@@ -180,7 +180,7 @@ Vue.mixin({
         this.path_block_folder_date = path_block_folder_date
 
 
-        
+
         var path_folder = path_project + "/versions/" + AppVue.project.version + "/" + AppVue.current_type + "/bt"
         rizeObject.onCreateFolder(path_folder)
         var path_block_folder = path_folder + "/" + AppVue.block_name
@@ -340,7 +340,7 @@ Vue.mixin({
       var path_block_folder = path_folder + "/" + AppVue.block_name
 
       var days = rizeObject.onGetListFiles(path_block_folder)
-  
+
 
       console.log(days)
       this.items_days = days
@@ -476,7 +476,14 @@ Vue.mixin({
         var args = [JSON.stringify(json_robot)];
         args.unshift(robot_script);
         console.log(args)
+
+
         robot_process = spawn('python', args);
+
+        if (rizeObject.opsys === "Windows") {
+          robot_process = spawn('C:/Python27/python', args);
+        }
+
         this.dialog_settings = false;
 
         robot_process.stdout.on('data', (data) => {

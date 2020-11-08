@@ -18,13 +18,20 @@ robot_name = "ROS"
 # Define robot actions
 robot = ActionEngine(robot_name, "listen")
 
+import pyttsx
+
 def wait(x,y):
     time.sleep(1)
+
+def speech2text(input_,parameters):
+    engine = pyttsx.init()
+    engine.say(input_)
+    engine.runAndWait()
 
 
 # Define actions 
 robot_actions = {
-                'say':wait,
+                'say':speech2text,
                 }
 
 # Set robot actions

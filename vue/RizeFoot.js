@@ -140,7 +140,14 @@ var RizeFoot = {
       var args = [JSON.stringify(json_robot)];
       args.unshift(robot_script);
       console.log(args)
+
+      
+      
       var init_robot = spawn('python', args);
+
+      if (rizeObject.opsys === "Windows") {
+        init_robot = spawn('C:/Python27/python', args);
+      }
 
       init_robot.stdout.on('data', (data) => {
         console.log("----- INIT ROBOT -----")

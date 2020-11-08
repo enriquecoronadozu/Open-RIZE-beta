@@ -40,6 +40,7 @@ except:
 
 # Define robot actions
 robot = rize.ActionEngine(robot_name, "listen")
+robot.multiple = True
 connected = False
 
 
@@ -159,6 +160,17 @@ if connected:
 
         print ("Robot ready")
         robot.onConnectSuccess()
+
+        name_ = robot_name + "_sensors"
+        node = nep.node(name_)  
+        sharo = node.new_pub("/blackboard","json")
+        
+        people = nep_aldebaran.PeoplePerception(robot_ip, robot_port, memoryProxy, sharo, robot_name)
+
+        ppeople = threading.Thread(target = people.onRun)
+        ppeople.daemon = True
+        ppeople.start()
+
 
         # Start action making thread
         robot.spin()

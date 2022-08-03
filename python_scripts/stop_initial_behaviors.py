@@ -19,7 +19,7 @@ from naoqi import ALModule
 
 robot_port = "9559"
 robot_name = "Pepper"
-robot_ip = '192.168.11.38'
+robot_ip = '192.168.11.48'
 middleware = "ZMQ"
 robot_info = {}
 

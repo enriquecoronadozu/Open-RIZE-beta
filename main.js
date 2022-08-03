@@ -5,7 +5,7 @@ const { ipcMain } = require('electron')
 var mainWindow
 
 // ----------------- MODE: set as false before builing installers -----------------
-var developer_mode = false;
+var developer_mode = true;
 
 function createWindow() {
   // Create the browser window.
@@ -16,7 +16,8 @@ function createWindow() {
     darkTheme: true,
     backgroundColor: '#2e2c29',
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
+      contextIsolation: false,
     }
   })
 
@@ -109,7 +110,8 @@ function onStart() {
 
 }
 
-onStart()
+// Use Nep App or Nep CLI instead
+//onStart()
 
 
 ipcMain.on('synchronous-message', (event, arg) => {

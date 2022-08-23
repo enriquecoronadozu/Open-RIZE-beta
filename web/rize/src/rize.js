@@ -9,7 +9,8 @@ class Rize {
 
     if (this.opsys == "darwin") {
       this.opsys = "MacOS";
-      this.pathRIZE = require("os").userInfo.homedir
+      this.pathRIZE = require("os").homedir().toString();
+      console.log("PATH MAC: " + this.pathRIZE)
     } else if (this.opsys === "win32" || this.opsys === "win64") {
       this.opsys = "Windows";
       this.pathRIZE = 'C:/Rize'

@@ -56,7 +56,7 @@
     "rize-js": "0.0.8",
     "sharo": "0.0.7",
     "vue": "^2.6.11",
-    "vuetify": "^2.3.4",
+    "vuetify": "^2.6.10",
     "zeromq": "^6.0.0-beta.6"
   },
   "devDependencies": {
